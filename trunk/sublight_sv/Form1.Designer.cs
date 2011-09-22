@@ -1,4 +1,8 @@
-﻿namespace sublight_sv
+﻿using System.Net.Sockets;
+using System.Net;
+using System.Text;
+using System;
+namespace sublight_sv
 {
     partial class Form1
     {
@@ -100,6 +104,8 @@
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(100, 20);
             this.textBox3.TabIndex = 6;
+            this.textBox3.Text = "9050";
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // openFileDialog1
             // 
