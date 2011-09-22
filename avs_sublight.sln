@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "avisynth", "avisynth", "{B70EBF17-408F-4648-9B5D-38EAF3F40DEB}"
+	ProjectSection(SolutionItems) = preProject
+		avisynth\avisynth.h = avisynth\avisynth.h
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "as_sublight", "as_sublight\as_sublight.vcxproj", "{07154E84-B9B3-4230-8662-4B3556EC4C03}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sublight_cl_cli", "sublight_cl_cli\sublight_cl_cli.vcxproj", "{D171EB02-ED39-4E32-8F27-E45DE9D08427}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{07154E84-B9B3-4230-8662-4B3556EC4C03}.Debug|Win32.ActiveCfg = Debug|Win32
+		{07154E84-B9B3-4230-8662-4B3556EC4C03}.Debug|Win32.Build.0 = Debug|Win32
+		{07154E84-B9B3-4230-8662-4B3556EC4C03}.Release|Win32.ActiveCfg = Release|Win32
+		{07154E84-B9B3-4230-8662-4B3556EC4C03}.Release|Win32.Build.0 = Release|Win32
+		{D171EB02-ED39-4E32-8F27-E45DE9D08427}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D171EB02-ED39-4E32-8F27-E45DE9D08427}.Debug|Win32.Build.0 = Debug|Win32
+		{D171EB02-ED39-4E32-8F27-E45DE9D08427}.Release|Win32.ActiveCfg = Release|Win32
+		{D171EB02-ED39-4E32-8F27-E45DE9D08427}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
