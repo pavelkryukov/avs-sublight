@@ -14,8 +14,27 @@ namespace sublight_sv
 {
     public partial class Form1 : Form
     {
+        private Socket mysocket;
+        private byte[] data;
+        private EndPoint Remote;
+        private IPEndPoint ipep;
+        private IPEndPoint _sender;
+
         public Form1()
         {
+            data = new byte[10];
+
+            mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            //mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+
+            ipep = new IPEndPoint(IPAddress.Loopback, 9051);
+            mysocket.Bind(ipep);
+
+            _sender = new IPEndPoint(IPAddress.Loopback, 9050);
+            Remote = (EndPoint)(_sender);
+            data = Encoding.ASCII.GetBytes("123456789");
+            mysocket.SendTo(data, data.Length, SocketFlags.None, Remote);
+
             InitializeComponent();
         }
 
@@ -33,15 +52,12 @@ namespace sublight_sv
 
         private void button3_Click(object sender, EventArgs e)
         {
-            var data = new byte[3];
+            if (_sender.Port != Convert.ToInt32(textBox3.Text))
+            {
+                _sender.Port = Convert.ToInt32(textBox3.Text);
+                Remote = (EndPoint)(_sender);
 
-            Socket mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            IPEndPoint ipep = new IPEndPoint(IPAddress.Loopback, Convert.ToInt32(textBox3.Text));
-            mysocket.Bind(ipep);
-
-            IPEndPoint _sender = new IPEndPoint(IPAddress.Loopback, Convert.ToInt32(textBox3.Text));
-            EndPoint Remote = (EndPoint)(_sender);
-            data = Encoding.ASCII.GetBytes("L?");
+            }
 
             mysocket.SendTo(data, data.Length, SocketFlags.None, Remote);
         }
