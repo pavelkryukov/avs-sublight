@@ -4,14 +4,13 @@ using System.Windows.Forms;
 
 namespace sublight_cl_net
 {
-    public sealed class Lamp : Form
-    {   
-        public Lamp()
+    internal sealed class Lamp : Form
+    {
+        private readonly Side _side;
+        private readonly UInt16 _port;
+        internal Lamp(UInt16 port, Side side)
         {
             SuspendLayout();
-            //
-            // Lamp
-            // 
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
@@ -22,14 +21,16 @@ namespace sublight_cl_net
             StartPosition = FormStartPosition.CenterScreen;
             Text = @"Lamp";
             Load += LampLoad;
-            MouseClick += LampMouseClick;
             ResumeLayout(false);
 
+            _side = side;
+            _port = port;
         }
-
-        private void LampMouseClick(object sender, MouseEventArgs e)
+        
+        public void Start()
         {
-
+            // ToDo [adikue] implement socket reader
+            BackColor = Color.FromArgb(255, 255, 255);
         }
 
         private void LampLoad(object sender, EventArgs e)
