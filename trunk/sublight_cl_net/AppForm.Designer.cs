@@ -107,7 +107,6 @@
             this.stopButton.TabIndex = 6;
             this.stopButton.Text = "Stop";
             this.stopButton.UseVisualStyleBackColor = true;
-            this.stopButton.Click += new System.EventHandler(AppForm.StopButtonClick);
             // 
             // AppForm
             // 
@@ -119,8 +118,10 @@
             this.Controls.Add(this.sideBox);
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.portBox);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "AppForm";
-            this.Text = "AppForm";
+            this.Text = "Sublight Client";
             this.sideBox.ResumeLayout(false);
             this.sideBox.PerformLayout();
             this.ResumeLayout(false);
