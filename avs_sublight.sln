@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sublight_cl_cli", "sublight
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_sv", "sublight_sv\sublight_sv.csproj", "{D7964825-70AC-413E-8EA0-3859180546F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_cl_net", "sublight_cl_net\sublight_cl_net.csproj", "{3001F6F1-0B39-4119-8CB6-14F5A581AF99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -52,6 +54,16 @@ Global
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|Win32.ActiveCfg = Release|x86
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|x86.ActiveCfg = Release|x86
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|x86.Build.0 = Release|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Debug|Win32.ActiveCfg = Debug|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Debug|x86.ActiveCfg = Debug|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Debug|x86.Build.0 = Debug|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Release|Mixed Platforms.Build.0 = Release|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Release|Win32.ActiveCfg = Release|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Release|x86.ActiveCfg = Release|x86
+		{3001F6F1-0B39-4119-8CB6-14F5A581AF99}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
