@@ -12,8 +12,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sublight_cl_cli", "sublight
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_sv", "sublight_sv\sublight_sv.csproj", "{D7964825-70AC-413E-8EA0-3859180546F5}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sublight_cl_wx", "sublight_cl_wx\sublight_cl_wx.vcxproj", "{AB5004E8-E07C-408C-B4DB-6034056F3313}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -54,16 +52,6 @@ Global
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|Win32.ActiveCfg = Release|x86
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|x86.ActiveCfg = Release|x86
 		{D7964825-70AC-413E-8EA0-3859180546F5}.Release|x86.Build.0 = Release|x86
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Debug|Win32.ActiveCfg = Debug|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Debug|Win32.Build.0 = Debug|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Debug|x86.ActiveCfg = Debug|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Release|Win32.ActiveCfg = Release|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Release|Win32.Build.0 = Release|Win32
-		{AB5004E8-E07C-408C-B4DB-6034056F3313}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
