@@ -61,8 +61,7 @@ namespace sublight_sv
         {
             var file = new System.IO.StreamWriter(@"test.avs");
             file.WriteLine(@"LoadPlugin(""as_sublight.dll"")
-clip = DirectShowSource(""" + this.textBox2.Text + @""")
-return Sublight(clip)");
+return Sublight(DirectShowSource(""" + this.textBox2.Text + @"""), PORT=" + this.textBox3.Text + @")");
             file.Close();
 
             Process prc = null;

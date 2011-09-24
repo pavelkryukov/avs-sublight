@@ -1,7 +1,7 @@
 /*
  * main.cpp
  *
- * Main DLL source for Ambilight plugin
+ * Main DLL source for AVS-Sublight plugin
  *
  * Kryukov Pavel, (C) 2011.
 */
@@ -19,7 +19,7 @@
 */
 AVSValue __cdecl Create_Sublight( AVSValue args, void* user_data, IScriptEnvironment* env) 
 {
-    return new Sublight( args[0].AsClip());  
+    return new Sublight( args[0].AsClip(), args[1].AsInt());  
 }
 
 /*
@@ -27,6 +27,6 @@ AVSValue __cdecl Create_Sublight( AVSValue args, void* user_data, IScriptEnviron
 */
 extern "C" __declspec(dllexport) const char* __stdcall AvisynthPluginInit2( IScriptEnvironment* env) 
 {
-    env->AddFunction( "Sublight", "c", Create_Sublight, 0);
+    env->AddFunction( "Sublight", "c[PORT]i", Create_Sublight, 0);
     return "`Sublight' Sublight plugin";
  }
