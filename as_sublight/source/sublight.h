@@ -20,12 +20,13 @@
 
 class Sublight : public GenericVideoFilter {
   private:
-    SOCKET sd;
+    const unsigned __int16 _port;
+    SOCKET _sd;
     static unsigned __int32 YUVtoRGB(unsigned __int64 Y, unsigned __int64 U, unsigned __int64 V);
   public:
-    Sublight(PClip _child);
+    Sublight(PClip child, const unsigned __int16 port);
     ~Sublight();
-    PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+    PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) const;
 };
 
-#endif  // __AMBILIGHT_H_
+#endif  // __SUBLIGHT_H_

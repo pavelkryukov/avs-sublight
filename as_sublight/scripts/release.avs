@@ -1,4 +1,3 @@
 LoadPlugin(".\..\bin\Release\as_sublight.dll")
-clip = DirectShowSource("\\video.campus\video\all\!title\ghi\Incredibles [Суперсемейка] (2004)[animation]\ru\The Incredibles Суперсемейка.avi")
-return Sublight(clip)
+return Sublight(DirectShowSource("\\video.campus\video\movie\year\1971\A Clockwork Orange [Заводной апельсин] (1971)[movie]\en\A Clockwork Orange.avi"), PORT=9050)
 #return clip
