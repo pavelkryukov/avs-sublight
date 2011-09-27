@@ -20,9 +20,14 @@ namespace sublight_cl_net
             {
                 port = UInt16.Parse(portBox.Text);
             }
-            catch (Exception)
+            catch (FormatException)
             {
-                MessageBox.Show(this, @"Invalid port number");
+                MessageBox.Show(this, @"Please enter number.");
+                return;
+            }
+            catch (OverflowException)
+            {
+                MessageBox.Show(this, @"Invalid port number. It should be from" + UInt16.MinValue + @" to " + UInt16.MaxValue + @".");
                 return;
             }
             _lamp = new Lamp(port, leftButton.Checked ? Side.Left : Side.Right);
