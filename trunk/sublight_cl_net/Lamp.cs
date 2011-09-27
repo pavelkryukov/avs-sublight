@@ -6,11 +6,26 @@ namespace sublight_cl_net
 {
     internal sealed class Lamp : Form
     {
+        private readonly Label _sideLabel = new Label();
+
         private readonly Side _side;
         private readonly UInt16 _port;
         internal Lamp(UInt16 port, Side side)
         {
+            _side = side;
+            _port = port;
+
             SuspendLayout();
+
+            _sideLabel.AutoSize = true;
+            _sideLabel.Location = new Point(100, 100);
+            _sideLabel.Name = "portLabel";
+            _sideLabel.Size = new Size(26, 13);
+            _sideLabel.Font = new Font("Microsoft Sans Serif", 36F, FontStyle.Regular);
+            _sideLabel.TabIndex = 1;
+            _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
+            Controls.Add(_sideLabel);
+
             AutoScaleDimensions = new SizeF(6F, 13F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
@@ -21,10 +36,10 @@ namespace sublight_cl_net
             StartPosition = FormStartPosition.CenterScreen;
             Text = @"Lamp";
             Load += LampLoad;
-            ResumeLayout(false);
 
-            _side = side;
-            _port = port;
+            DoubleClick += ((sender, e) => Application.Exit());
+            
+            ResumeLayout(false);
         }
         
         public void Start()
