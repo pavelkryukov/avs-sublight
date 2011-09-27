@@ -13,7 +13,14 @@ namespace sublight_cl_net
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new AppForm());
-        }
+            try
+            {
+                Application.Run(new AppForm());
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+    }
     }
 }
