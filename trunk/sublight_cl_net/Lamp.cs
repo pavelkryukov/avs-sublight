@@ -10,6 +10,7 @@ namespace sublight_cl_net
 
         private readonly Side _side;
         private readonly UInt16 _port;
+
         internal Lamp(UInt16 port, Side side)
         {
             _side = side;
@@ -35,7 +36,11 @@ namespace sublight_cl_net
             Name = "Lamp";
             StartPosition = FormStartPosition.CenterScreen;
             Text = @"Lamp";
-            Load += LampLoad;
+
+            Top = 0;
+            Left = 0;
+            Width = Screen.PrimaryScreen.Bounds.Width;
+            Height = Screen.PrimaryScreen.Bounds.Height;
 
             DoubleClick += ((sender, e) => Application.Exit());
             
@@ -46,14 +51,6 @@ namespace sublight_cl_net
         {
             // ToDo [adikue] implement socket reader
             BackColor = Color.FromArgb(255, 255, 255);
-        }
-
-        private void LampLoad(object sender, EventArgs e)
-        {
-            Top = 0;
-            Left = 0;
-            Width = 5000;
-            Height = 5000;
         }
     }
 }
