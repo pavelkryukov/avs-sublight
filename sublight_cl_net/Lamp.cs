@@ -7,6 +7,7 @@ namespace sublight_cl_net
     internal sealed class Lamp : Form
     {
         private readonly Label _sideLabel = new Label();
+        private readonly PictureBox _pictureBox = new PictureBox();
 
         private readonly Side _side;
         private readonly UInt16 _port;
@@ -18,6 +19,11 @@ namespace sublight_cl_net
 
             SuspendLayout();
 
+            Top = 0;
+            Left = 0;
+            Width = Screen.PrimaryScreen.Bounds.Width;
+            Height = Screen.PrimaryScreen.Bounds.Height;
+
             _sideLabel.AutoSize = true;
             _sideLabel.Location = new Point(100, 100);
             _sideLabel.Name = "portLabel";
@@ -27,22 +33,18 @@ namespace sublight_cl_net
             _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
             Controls.Add(_sideLabel);
 
-            AutoScaleDimensions = new SizeF(6F, 13F);
-            AutoScaleMode = AutoScaleMode.Font;
+            _pictureBox.Size = new Size(64, 64);
+            _pictureBox.Location = new Point(Width - _pictureBox.Width, 0);
+            _pictureBox.Image = Properties.Resources.cross;
+            _pictureBox.Click += ((sender, e) => Application.Exit());
+            Controls.Add(_pictureBox);
+
             BackColor = Color.White;
-            ClientSize = new Size(1292, 812);
             FormBorderStyle = FormBorderStyle.None;
             MaximizeBox = false;
             Name = "Lamp";
             StartPosition = FormStartPosition.CenterScreen;
             Text = @"Lamp";
-
-            Top = 0;
-            Left = 0;
-            Width = Screen.PrimaryScreen.Bounds.Width;
-            Height = Screen.PrimaryScreen.Bounds.Height;
-
-            DoubleClick += ((sender, e) => Application.Exit());
             
             ResumeLayout(false);
         }

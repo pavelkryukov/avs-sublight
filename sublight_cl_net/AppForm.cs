@@ -30,7 +30,7 @@ namespace sublight_cl_net
             _lamp.Show();
         }
 
-        private static void StopButtonClick(object sender, EventArgs e)
+        private void StopButtonClick(object sender, EventArgs e)
         {
             if (_lamp == null) return;
             _lamp.Close();
