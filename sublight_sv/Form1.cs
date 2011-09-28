@@ -10,25 +10,24 @@ namespace sublight_sv
     public partial class Form1 : Form
     {
         private Socket mysocket;
-        private byte[] data;
+        private byte[] chkL, chkR;
         private EndPoint Remote;
         private IPEndPoint ipep;
         private IPEndPoint _sender;
 
         public Form1()
         {
-            data = new byte[10];
+            chkL = new byte[6];
+            chkR = new byte[6];
+            chkL = Encoding.ASCII.GetBytes("islok");
+            chkR = Encoding.ASCII.GetBytes("isrok");
 
             mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            //mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-
-            ipep = new IPEndPoint(IPAddress.Loopback, 9051);
+            ipep = new IPEndPoint(IPAddress.Any, 9051);
             mysocket.Bind(ipep);
 
-            _sender = new IPEndPoint(IPAddress.Loopback, 9050);
+            _sender = new IPEndPoint(IPAddress.Broadcast, 9050);
             Remote = (EndPoint)(_sender);
-            data = Encoding.ASCII.GetBytes("123456789");
-            mysocket.SendTo(data, data.Length, SocketFlags.None, Remote);
 
             InitializeComponent();
         }
@@ -51,10 +50,26 @@ namespace sublight_sv
             {
                 _sender.Port = Convert.ToInt32(textBox3.Text);
                 Remote = (EndPoint)(_sender);
+            }
+
+            mysocket.SendTo(chkL, chkL.Length, SocketFlags.None, Remote);
+            while (!checkBox1.Checked)
+            {
+                var data = new byte[1024];
+                int recv = mysocket.ReceiveFrom(data, ref Remote);
+                string message = Encoding.ASCII.GetString(data, 0, recv);
+                if (message.Equals("lisok"))
+                {
+                    checkBox1.Checked = true;
+                    label4.Text += " Left is OK!";
+                }
 
             }
 
-            mysocket.SendTo(data, data.Length, SocketFlags.None, Remote);
+          
+
+
+                       
         }
 
         private void button4_Click(object sender, EventArgs e)
