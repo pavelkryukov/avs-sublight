@@ -10,7 +10,7 @@
 #include <windows.h>
 
 // AviSynth SDK
-#include <avisynth/avisynth.h>
+#include "./avisynth.h"
 
 #include "sublight.h"
 

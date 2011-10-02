@@ -1,3 +1,4 @@
 LoadPlugin(".\..\bin\Release\as_sublight.dll")
-return Sublight(DirectShowSource("\\video.campus\video\movie\year\1971\A Clockwork Orange [Заводной апельсин] (1971)[movie]\en\A Clockwork Orange.avi"), PORT=9050)
+clip = DirectShowSource("\\video.campus\video\all\by tag\collection\Monty Python\Monty Python and the Holy Grail [Монти Пайтон и священный Грааль] (1975)[movie]\Monty Python and the Holy Grail [eng].avi")
+return Sublight(clip, 12050)
 #return clip

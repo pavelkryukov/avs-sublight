@@ -15,8 +15,8 @@
 // Windows socket header
 #include <WinSock.h>
 
-// AviSynth API
-#include <avisynth/avisynth.h>
+// AviSynth SDK
+#include "./avisynth.h"
 
 class Sublight : public GenericVideoFilter {
   private:

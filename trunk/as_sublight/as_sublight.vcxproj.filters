@@ -34,5 +34,8 @@
     <ClInclude Include="source\sublight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\avisynth.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
