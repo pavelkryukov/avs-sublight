@@ -33,7 +33,7 @@ System::Void FullScreenForm::Click(System::Object^  sender, System::Windows::For
     sockaddr_in addr = {};
     addr.sin_family = AF_INET;
     addr.sin_addr.S_un.S_addr = INADDR_ANY;
-    addr.sin_port = 12019;
+    addr.sin_port = 12050;
     bind (sd, (sockaddr*)&addr, sizeof sockaddr_in);
 
     if (_side) while (1) {

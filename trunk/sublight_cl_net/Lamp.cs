@@ -3,7 +3,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Net;
-using System.Text;
 
 namespace sublight_cl_net
 {
@@ -15,25 +14,17 @@ namespace sublight_cl_net
         private readonly Side _side;
         private readonly UInt16 _port;
 
-        private Socket _mysocket;
-        private int _recv;
-        private byte[] _data;
-        private IPEndPoint _ipep, _sender;
-        private EndPoint _Remote;
-
+        private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        private readonly byte[] _data = new byte[8];
+        private EndPoint _remote;
 
         internal Lamp(UInt16 port, Side side)
         {
             _side = side;
             _port = port;
 
-            _data = new byte[8]; //данные, которые будут передаваться или приниматься
-            _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-
-            _ipep = new IPEndPoint(IPAddress.Any, _port);
-            _mysocket.Bind(_ipep); //привязываем точку к нашему сокету
-            _sender = new IPEndPoint(IPAddress.Broadcast, 9051);
-            _Remote = (EndPoint)(_sender);
+            _mysocket.Bind(new IPEndPoint(IPAddress.Any, _port)); //привязываем точку к нашему сокету
+            _remote = new IPEndPoint(IPAddress.Broadcast, 9051);
 
             SuspendLayout();
 
@@ -71,19 +62,27 @@ namespace sublight_cl_net
         {
             while(true)
             {
-                _recv = _mysocket.ReceiveFrom(_data, ref _Remote);
-
-                if (_side == Side.Left)
+                try
                 {
-                    BackColor = Color.FromArgb(_data[1], _data[2], _data[3]);
+
+                    _mysocket.ReceiveFrom(_data, ref _remote);
+                }
+                catch(Exception)
+                {
+                    return;
                 }
 
-                if (_side == Side.Right)
+                switch (_side)
                 {
-                    BackColor = Color.FromArgb(_data[5], _data[6], _data[7]);
+                    case Side.Left:
+                        BackColor = Color.FromArgb(_data[1], _data[2], _data[3]);
+                        break;
+                    case Side.Right:
+                        BackColor = Color.FromArgb(_data[5], _data[6], _data[7]);
+                        break;
                 }
                 Application.DoEvents();
-            }
+            };
         }
     }
 }

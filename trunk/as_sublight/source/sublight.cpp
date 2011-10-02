@@ -24,7 +24,7 @@ Sublight::Sublight(PClip child, unsigned __int16 port) : GenericVideoFilter(chil
     addr.sin_addr.S_un.S_addr = inet_addr ("255.255.255.255");
     addr.sin_port = _port;
 
-    connect (this->_sd, (sockaddr*)&addr, sizeof sockaddr_in);
+    connect (this->_sd, (sockaddr*)&addr, sizeof(sockaddr_in));
 }
 
 /*
@@ -55,7 +55,7 @@ unsigned __int32 Sublight::YUVtoRGB(unsigned __int64 Y, unsigned __int64 U, unsi
 /*
  * Frame generator
  */
-PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) const {
+PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
 
     // Get source
     const PVideoFrame src = child->GetFrame(n, env);
