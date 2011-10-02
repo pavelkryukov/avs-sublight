@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_sv", "sublight_sv\
 		{07154E84-B9B3-4230-8662-4B3556EC4C03} = {07154E84-B9B3-4230-8662-4B3556EC4C03}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_cl_net", "sublight_cl_net\sublight_cl_net.csproj", "{3001F6F1-0B39-4119-8CB6-14F5A581AF99}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sublight_cl", "sublight_cl\sublight_cl.csproj", "{3001F6F1-0B39-4119-8CB6-14F5A581AF99}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
