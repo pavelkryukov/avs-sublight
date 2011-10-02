@@ -38,7 +38,7 @@ Sublight::~Sublight() {
  * Converter form YUV to RGB
 */
 unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V) {
-    const signed __int32 R = (298 * ((Y - 16) + 409 * (V - 128) + 128) >> 8);
+    const signed __int32 R = (298 * (Y - 16) + 409 * (V - 128) + 128) >> 8;
     __int32 out = R > 255 ? 255 : (R < 0 ? 0 : R) << 8;
 
     const signed __int32 G = ((298 * (Y - 16) - 100 * (U - 128) - 208 * (V - 128) + 128) >> 8);
