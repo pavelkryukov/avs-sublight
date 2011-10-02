@@ -26,7 +26,7 @@ class Sublight : public GenericVideoFilter {
   public:
     Sublight(PClip child, const unsigned __int16 port);
     ~Sublight();
-    PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env) const;
+    PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };
 
 #endif  // __SUBLIGHT_H_
