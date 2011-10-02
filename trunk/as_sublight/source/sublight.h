@@ -22,7 +22,7 @@ class Sublight : public GenericVideoFilter {
   private:
     const unsigned __int16 _port;
     SOCKET _sd;
-    static unsigned __int32 YUVtoRGB(unsigned __int64 Y, unsigned __int64 U, unsigned __int64 V);
+    static unsigned __int32 YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V);
   public:
     Sublight(PClip child, const unsigned __int16 port);
     ~Sublight();
