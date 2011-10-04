@@ -24,7 +24,7 @@ class Sublight : public GenericVideoFilter {
     SOCKET _sd;
     static unsigned __int32 YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V);
   public:
-    Sublight(PClip child, const unsigned __int16 port);
+    Sublight(PClip child, const unsigned __int16 port, const char* const ip);
     ~Sublight();
     PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };

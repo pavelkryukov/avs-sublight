@@ -5,23 +5,23 @@
  * Copyright 2011 Kryukov Pavel.
 */
 
-// Standard exception
-#include <exception>
-
 #include "sublight.h"
 
 /*
  * Constructor
  */
-Sublight::Sublight(PClip child, unsigned __int16 port) : GenericVideoFilter(child), _port(port) {
+Sublight::Sublight(PClip child, unsigned __int16 port, const char* const ip) : GenericVideoFilter(child), _port(port) {
     WSADATA wsadata = {};
     WSAStartup (MAKEWORD (2, 2), &wsadata);
 
     this->_sd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    
+    BOOL bOptVal = TRUE;
+    setsockopt(_sd, SOL_SOCKET, SO_BROADCAST, (char *)&bOptVal, sizeof(BOOL));
 
     sockaddr_in addr = {};
     addr.sin_family = AF_INET;
-    addr.sin_addr.S_un.S_addr = inet_addr ("255.255.255.255");
+    addr.sin_addr.S_un.S_addr = inet_addr (ip);
     addr.sin_port = _port;
 
     connect (this->_sd, (sockaddr*)&addr, sizeof(sockaddr_in));
@@ -190,7 +190,7 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
         // Unknown format
         delete[] averageL;
         delete[] averageR;
-        throw new std::exception("Invalid file type");
+        env->ThrowError("Invalid file type");
     }
 
     // Cleaning
