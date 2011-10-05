@@ -32,20 +32,18 @@ Sublight::~Sublight() {
     closesocket (this->_sd);
 }
 
+#define CUT(a) ((a > 255) ? 255 : (a < 0 ? 0 : (unsigned __int32)a)) 
+
 /*
  * Converter form YUV to RGB
 */
 unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V) {
+    const signed __int32 R = (298 * ((signed _int32)Y - 16) + 409 *                                  ((signed _int32)V - 128) + 128) >> 8;
+    const signed __int32 G = (298 * ((signed _int32)Y - 16) - 100 * ((signed _int32)U - 128) - 208 * ((signed _int32)V - 128) + 128) >> 8;
+    const signed __int32 B = (298 * ((signed _int32)Y - 16) + 516 * ((signed _int32)U - 128) + 128)                                  >> 8;
+  
     unsigned __int32 out = 0x00000000;
-
-    const signed __int32 R = (298 * ((signed _int32)Y - 16) + 409 * ((signed _int32)V - 128) + 128) >> 8;
-    out += ((R > 255) ? 255 : (R < 0 ? 0 : (unsigned __int32)R)) << 8;
-
-    const signed __int32 G = ((298 * ((signed _int32)Y - 16) - 100 * ((signed _int32)U - 128) - 208 * ((signed _int32)V - 128) + 128) >> 8);
-    out += ((G > 255) ? 255 : (G < 0 ? 0 : (unsigned __int32)G)) << 16;
-
-    const signed __int32 B = ((298 * ((signed _int32)Y - 16) + 516 * ((signed _int32)U - 128) + 128) >> 8);
-    out += ((B > 255) ? 255 : (B < 0 ? 0 : (unsigned __int32)B)) << 24;
+    out += (CUT(R) << 8) + (CUT(G) << 16) + (CUT(R) << 24);
 
     return out;
 }
