@@ -32,7 +32,6 @@ namespace sublight_sv
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.selectPlayerButton = new System.Windows.Forms.Button();
             this.playerText = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -45,10 +44,9 @@ namespace sublight_sv
             this.checkButton = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.startButton = new System.Windows.Forms.Button();
-            this.timer = new System.Windows.Forms.Timer(this.components);
             this.statusLabel = new System.Windows.Forms.Label();
-            this.rightRadio = new System.Windows.Forms.RadioButton();
-            this.leftRadio = new System.Windows.Forms.RadioButton();
+            this.RcheckBox = new System.Windows.Forms.CheckBox();
+            this.LcheckBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -164,35 +162,36 @@ namespace sublight_sv
             this.statusLabel.TabIndex = 11;
             this.statusLabel.Text = "Status...";
             // 
-            // rightRadio
+            // RcheckBox
             // 
-            this.rightRadio.AutoSize = true;
-            this.rightRadio.Location = new System.Drawing.Point(179, 87);
-            this.rightRadio.Name = "rightRadio";
-            this.rightRadio.Size = new System.Drawing.Size(33, 17);
-            this.rightRadio.TabIndex = 12;
-            this.rightRadio.TabStop = true;
-            this.rightRadio.Text = "R";
-            this.rightRadio.UseVisualStyleBackColor = true;
+            this.RcheckBox.AutoSize = true;
+            this.RcheckBox.Enabled = false;
+            this.RcheckBox.Location = new System.Drawing.Point(179, 88);
+            this.RcheckBox.Name = "RcheckBox";
+            this.RcheckBox.Size = new System.Drawing.Size(34, 17);
+            this.RcheckBox.TabIndex = 14;
+            this.RcheckBox.Text = "R";
+            this.RcheckBox.UseVisualStyleBackColor = true;
             // 
-            // leftRadio
+            // LcheckBox
             // 
-            this.leftRadio.AutoSize = true;
-            this.leftRadio.Location = new System.Drawing.Point(34, 87);
-            this.leftRadio.Name = "leftRadio";
-            this.leftRadio.Size = new System.Drawing.Size(31, 17);
-            this.leftRadio.TabIndex = 13;
-            this.leftRadio.TabStop = true;
-            this.leftRadio.Text = "L";
-            this.leftRadio.UseVisualStyleBackColor = true;
+            this.LcheckBox.AutoSize = true;
+            this.LcheckBox.Enabled = false;
+            this.LcheckBox.Location = new System.Drawing.Point(35, 87);
+            this.LcheckBox.Name = "LcheckBox";
+            this.LcheckBox.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.LcheckBox.Size = new System.Drawing.Size(32, 17);
+            this.LcheckBox.TabIndex = 15;
+            this.LcheckBox.Text = "L";
+            this.LcheckBox.UseVisualStyleBackColor = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(460, 199);
-            this.Controls.Add(this.leftRadio);
-            this.Controls.Add(this.rightRadio);
+            this.Controls.Add(this.LcheckBox);
+            this.Controls.Add(this.RcheckBox);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.pictureBox1);
@@ -227,10 +226,168 @@ namespace sublight_sv
         private System.Windows.Forms.Button checkButton;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button startButton;
-        private System.Windows.Forms.Timer timer;
         private System.Windows.Forms.Label statusLabel;
-        private System.Windows.Forms.RadioButton rightRadio;
-        private System.Windows.Forms.RadioButton leftRadio;
+        private ChkDialog CheckDialog;
+        public System.Windows.Forms.CheckBox RcheckBox;
+        public System.Windows.Forms.CheckBox LcheckBox;
+        public bool lchkd;
+        public bool rchkd;
+    }
+
+    public class ChkDialog : System.Windows.Forms.Form
+    {
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Timer timer2;
+        private System.ComponentModel.IContainer components;
+        private MainForm _parent;
+        private int i;
+
+        public ChkDialog(MainForm parent)
+        {
+            _parent = parent;
+            InitializeComponent();
+            this.Visible = true;
+            this.progressBar1.Maximum = 100;
+            //this.progressBar1.Value = 100;
+            StartSending();
+        }
+
+        private void StartTimer()
+        {
+            this.timer2.Start();
+            this.i = 0;
+        }
+
+        public void StartSending()
+        {
+            var Rdata = new byte[5];
+            int recv=0, steps = 2;
+
+            _parent.rchkd = false;
+            _parent.rchkd = false;
+
+            for (int a = 1; a <= steps; a++)
+            {
+                StartTimer();
+                System.Windows.Forms.Application.DoEvents();
+
+                byte[] SLdata = Encoding.ASCII.GetBytes(_parent.ChkL);
+
+                _parent._mysocket.SendTo(SLdata, SLdata.Length, SocketFlags.None, _parent._sender);
+                var remote = (EndPoint)_parent._sender;
+                while (this.i <= 3)//Wait for ansver 3 timer ticks
+                {
+                    System.Windows.Forms.Application.DoEvents();
+                    recv = _parent._mysocket.Available;
+                    if (recv > 0)
+                    {
+                        recv = _parent._mysocket.ReceiveFrom(Rdata, ref remote);
+                        break;
+                    }
+                }
+                var message = Encoding.ASCII.GetString(Rdata, 0, recv);
+
+                if (message.Equals("lisok"))
+                {
+                    _parent.lchkd = true;
+                    this.progressBar1.Value = this.progressBar1.Maximum / 2;
+                    System.Windows.Forms.Application.DoEvents();
+                    break;
+                }
+
+                this.progressBar1.Value = a * this.progressBar1.Maximum / (2 * steps);
+                System.Windows.Forms.Application.DoEvents();
+                timer2.Stop();
+            }
+
+            for (int a = 1; a <= steps; a++)//Wait for ansver 3 timer ticks
+            {
+                StartTimer();
+                System.Windows.Forms.Application.DoEvents();
+
+                byte[] SRdata = Encoding.ASCII.GetBytes(_parent.ChkR);
+
+                _parent._mysocket.SendTo(SRdata, SRdata.Length, SocketFlags.None, _parent._sender);
+                var remote = (EndPoint)_parent._sender;
+                while (this.i <= 3)//Wait for ansver 2 timer ticks
+                {
+                    System.Windows.Forms.Application.DoEvents();
+                    recv = _parent._mysocket.Available;
+                    if (recv > 0)
+                    {
+                        recv = _parent._mysocket.ReceiveFrom(Rdata, Rdata.Length, SocketFlags.None, ref remote);
+                        break;
+                    }
+                }
+                var message = Encoding.ASCII.GetString(Rdata, 0, recv);
+
+                if (message.Equals("risok"))
+                {
+                    _parent.rchkd = true;
+                    this.progressBar1.Value = this.progressBar1.Maximum;
+                    System.Windows.Forms.Application.DoEvents();
+                    break;
+                }     
+           
+                this.progressBar1.Value = a * this.progressBar1.Maximum/steps;
+                System.Windows.Forms.Application.DoEvents();
+                timer2.Stop();
+            }
+            this.progressBar1.Value = this.progressBar1.Maximum;
+            System.Windows.Forms.Application.DoEvents();
+            this.Close();
+        }
+
+        private void InitializeComponent()
+        {
+            this.components = new System.ComponentModel.Container();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.label10 = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(12, 39);
+            this.progressBar1.Maximum = 10;
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(218, 23);
+            this.progressBar1.TabIndex = 0;
+            // 
+            // timer2
+            // 
+            this.timer2.Enabled = true;
+            this.timer2.Interval = 100;
+            this.timer2.Tick += new System.EventHandler(this.timer2_Tick);
+            // 
+            // label1
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Font = new System.Drawing.Font("Calibri", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label10.Location = new System.Drawing.Point(25, 13);
+            this.label10.Name = "label1";
+            this.label10.Size = new System.Drawing.Size(196, 23);
+            this.label10.TabIndex = 1;
+            this.label10.Text = "Checking connection . . .";
+            // 
+            // ChkDialog
+            // 
+            this.ClientSize = new System.Drawing.Size(242, 74);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.progressBar1);
+            this.Name = "ChkDialog";
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+        }
+
+        private void timer2_Tick(object sender, EventArgs e)
+        {
+            i++;
+        }
+
+        
     }
 }
 
