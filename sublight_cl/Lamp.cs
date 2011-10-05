@@ -57,16 +57,36 @@ namespace sublight_cl
             
             ResumeLayout(false);
         }
+
+        ~Lamp()
+        {
+            _mysocket.Close();
+        }
         
         public void Start()
         {
+            uint r, g, b;
+            switch (_side)
+            {
+                case Side.Left:
+                    r = 5;
+                    g = 6;
+                    b = 7;
+                    break;
+                case Side.Right:
+                    r = 1;
+                    g = 2;
+                    b = 3;
+                    break;
+                default:
+                    throw new Exception("Invalid side has been selected.");
+            }
             while(true)
             {
                 var data = new byte[8];
                 try
                 {
-                    _mysocket.ReceiveFrom(data, ref _remote);
-                    //_mysocket.Receive(_data);
+                    _mysocket.ReceiveFrom(data, 8, SocketFlags.None, ref _remote);
                 }
                 catch(Exception)
                 {
@@ -75,16 +95,7 @@ namespace sublight_cl
 
                 if ((data[0] == 0xA7) && (data[4] == 0xEB))
                 {
-                    switch (_side)
-                    {
-                        case Side.Left:
-                            BackColor = Color.FromArgb(data[5], data[6], data[7]);
-                            break;
-
-                        case Side.Right:
-                            BackColor = Color.FromArgb(data[1], data[2], data[3]);
-                            break;
-                    }
+                    BackColor = Color.FromArgb(data[r], data[g], data[b]);
                 }
 
                 Application.DoEvents();
