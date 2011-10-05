@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace sublight_cl_net
+namespace sublight_cl
 {
     static class Program
     {
@@ -21,6 +21,6 @@ namespace sublight_cl_net
             {
                 MessageBox.Show(e.ToString());
             }
-    }
+        }
     }
 }

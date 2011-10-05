@@ -1,4 +1,4 @@
-﻿namespace sublight_cl_net
+﻿namespace sublight_cl
 {
     partial class AppForm
     {

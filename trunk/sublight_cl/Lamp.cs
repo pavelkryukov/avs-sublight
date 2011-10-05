@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Net;
 
-namespace sublight_cl_net
+namespace sublight_cl
 {
     internal sealed class Lamp : Form
     {
@@ -15,7 +15,6 @@ namespace sublight_cl_net
         private readonly UInt16 _port;
 
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private readonly byte[] _data = new byte[1024];
         private EndPoint _remote;
 
         internal Lamp(UInt16 port, Side side)
@@ -63,9 +62,10 @@ namespace sublight_cl_net
         {
             while(true)
             {
+                var data = new byte[8];
                 try
                 {
-                    _mysocket.ReceiveFrom(_data, ref _remote);
+                    _mysocket.ReceiveFrom(data, ref _remote);
                     //_mysocket.Receive(_data);
                 }
                 catch(Exception)
@@ -73,18 +73,22 @@ namespace sublight_cl_net
                     return;
                 }
 
-                switch (_side)
+                if ((data[0] == 0xA7) && (data[4] == 0xEB))
                 {
-                    case Side.Left:
-                        BackColor = Color.FromArgb(_data[5], _data[6], _data[7]);                        
-                        break;
+                    switch (_side)
+                    {
+                        case Side.Left:
+                            BackColor = Color.FromArgb(data[5], data[6], data[7]);
+                            break;
 
-                    case Side.Right:
-                        BackColor = Color.FromArgb(_data[1], _data[2], _data[3]);
-                        break;
+                        case Side.Right:
+                            BackColor = Color.FromArgb(data[1], data[2], data[3]);
+                            break;
+                    }
                 }
+
                 Application.DoEvents();
-            };
+            }
         }
     }
 }

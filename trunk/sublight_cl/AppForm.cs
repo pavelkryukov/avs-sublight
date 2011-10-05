@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace sublight_cl_net
+namespace sublight_cl
 {
     internal partial class AppForm : Form
     {
