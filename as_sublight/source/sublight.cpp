@@ -43,7 +43,7 @@ unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsi
     const signed __int32 B = (298 * ((signed __int32)Y - 16) + 516 * ((signed __int32)U - 128)                                   + 128) >> 8;
   
     unsigned __int32 out = 0x00000000;
-    out += (CUT(R) << 8) + (CUT(G) << 16) + (CUT(R) << 24);
+    out += (CUT(R) << 8) + (CUT(G) << 16) + (CUT(B) << 24);
 
     return out;
 }
