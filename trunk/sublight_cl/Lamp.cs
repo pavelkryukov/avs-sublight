@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Net.Sockets;
@@ -16,6 +17,8 @@ namespace sublight_cl
 
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private EndPoint _remote;
+        
+        private const int Timeout = 10000;
 
         internal Lamp(UInt16 port, Side side)
         {
@@ -24,6 +27,8 @@ namespace sublight_cl
 
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
             _mysocket.Bind(new IPEndPoint(IPAddress.Any, _port)); //Слушать будем 12050
+            _mysocket.ReceiveTimeout = Timeout;
+
             _remote = new IPEndPoint(IPAddress.Any,0);
 
             SuspendLayout();
@@ -58,11 +63,16 @@ namespace sublight_cl
             ResumeLayout(false);
         }
 
-        ~Lamp()
+        public void KillSocket()
         {
             _mysocket.Close();
         }
-        
+
+        ~Lamp()
+        {
+            KillSocket();
+        }
+
         public void Start()
         {
             uint r, g, b;
@@ -88,16 +98,23 @@ namespace sublight_cl
                 {
                     _mysocket.ReceiveFrom(data, 8, SocketFlags.None, ref _remote);
                 }
-                catch(Exception)
+                catch (SocketException)
                 {
-                    return;
+                    var result = MessageBox.Show(@"Error while reading data from socket", @"Sublight receiver", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
+                    switch (result)
+                    {
+                        case DialogResult.Retry:
+                            continue;
+                        case DialogResult.Cancel:
+                            return;
+                    }
                 }
 
                 if ((data[0] == 0xA7) && (data[4] == 0xEB))
                 {
                     BackColor = Color.FromArgb(data[r], data[g], data[b]);
                 }
-
+                
                 Application.DoEvents();
             }
         }
