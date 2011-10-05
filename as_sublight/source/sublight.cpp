@@ -5,21 +5,17 @@
  * Copyright 2011 Kryukov Pavel.
 */
 
-#include "sublight.h"
+#pragma comment(lib, "Ws2_32.lib")
 
+#include "sublight.h"
 /*
  * Constructor
  */
-Sublight::Sublight(PClip child, unsigned __int16 port, const char* const ip) : GenericVideoFilter(child), _port(port) {
-	char buff[10*1014];
-       // Шаг 1 - иницилизация библиотеки Winsocks
-    WSAStartup(0x202,(WSADATA *)&buff[0]);
+Sublight::Sublight(PClip child, unsigned __int16 port, const char* const ip) : GenericVideoFilter(child) {
+    WSADATA wsadata = {};
+    WSAStartup (MAKEWORD (2, 2), &wsadata);
 
-    // Шаг 2 - открытие сокета
     this->_sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
- 
-    // Шаг 3 - обмен сообщений с сервером
-    //sockaddr_in dest_addr;
  
     dest_addr.sin_family=AF_INET;
     dest_addr.sin_port=htons(port);
@@ -48,8 +44,6 @@ unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsi
 
     const signed __int32 B = ((298 * (Y - 16) + 516 * (U - 128) + 128) >> 8);
     out += (B > 255 ? 255 : (B < 0 ? 0 : B)) << 24;
-
-    out |= 0xFF;
 
     return out;
 }
@@ -174,12 +168,10 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
         outL = ((unsigned __int8)averageL[0] << 24) + 
                ((unsigned __int8)averageL[1] << 16) + 
                ((unsigned __int8)averageL[2] << 8);
-        outL |= 0xFF;
 
         outR = ((unsigned __int8)averageR[0] << 24) + 
                ((unsigned __int8)averageR[1] << 16) + 
                ((unsigned __int8)averageR[2] << 8);
-        outR |= 0xFF;
     }
     else if (this->vi.IsYUY2()) {
 
@@ -200,12 +192,11 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     delete[] averageR;
 
     // Collecting two __int32 into one __int64
-    unsigned __int64 data = ((unsigned __int64)outL << 32) + outR;
+    unsigned __int64 data = (((unsigned __int64)outL << 32) + outR) | Sublight::CONTROLMASK;
 
     // Sending to socket
 	sendto(_sd, (char*)&data,  sizeof(data), 0,
         (sockaddr*)&dest_addr, sizeof(dest_addr));
-    //send (_sd, (char*)&data, sizeof(data), 0);
 
     // Return source
     return src;
