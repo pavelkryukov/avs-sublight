@@ -27,19 +27,27 @@ namespace sublight_cl
             }
             catch (OverflowException)
             {
-                MessageBox.Show(this, @"Invalid port number. It should be from" + UInt16.MinValue + @" to " + UInt16.MaxValue + @".");
+                MessageBox.Show(this,
+                                @"Invalid port number. It should be from" + UInt16.MinValue + @" to " + UInt16.MaxValue +
+                                @".");
                 return;
             }
+
             _lamp = new Lamp(port, leftButton.Checked ? Side.Left : Side.Right);
+
             _lamp.Show();
             _lamp.Start();
-            
+
+            _lamp.Close();
+            _lamp.KillSocket();
+            _lamp = null;
         }
 
         private void StopButtonClick(object sender, EventArgs e)
         {
             if (_lamp == null) return;
             _lamp.Close();
+            _lamp.KillSocket();
             _lamp = null;
         }
 
