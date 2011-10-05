@@ -31,8 +31,9 @@ namespace sublight_cl_net
                 return;
             }
             _lamp = new Lamp(port, leftButton.Checked ? Side.Left : Side.Right);
-            _lamp.Start();
             _lamp.Show();
+            _lamp.Start();
+            
         }
 
         private void StopButtonClick(object sender, EventArgs e)
@@ -41,5 +42,6 @@ namespace sublight_cl_net
             _lamp.Close();
             _lamp = null;
         }
+
     }
 }

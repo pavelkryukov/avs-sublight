@@ -14,12 +14,13 @@ namespace sublight_sv
 /*
         private const string ChkR = "isrok";
 */
-        private readonly IPEndPoint _sender = new IPEndPoint(IPAddress.Broadcast, 9050);
+        private readonly IPEndPoint _sender = new IPEndPoint(IPAddress.Loopback, 12050);//Слать пакеты будем на 9050
 
         public MainForm()
         {
             _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, 9051));
+            _mysocket.Bind(new IPEndPoint(IPAddress.Loopback, 9051));//Cлушаем приходящие пакеты на 9051
+            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast,true);
 
 
             InitializeComponent();
@@ -40,11 +41,22 @@ namespace sublight_sv
         private void CheckButtonClick(object sender, EventArgs e)
         {
             _sender.Port = Convert.ToInt32(portText.Text);
-            
-            _mysocket.SendTo(Encoding.ASCII.GetBytes(ChkL), ChkL.Length, SocketFlags.None, _sender);
-            while (!leftRadio.Checked)
+
+            var data = new byte[1024];
+            for (uint i = 0; i < 1024; i++)
+            {
+                data[i] = 0xA;
+            }
+
+            _mysocket.SendTo(data, data.Length, SocketFlags.None, _sender);
+
+            /*while (!leftRadio.Checked)
             {
                 var data = new byte[1024];
+                for (uint i = 0; i < 1024; i++)
+                {
+                    data[i] = 0xA;
+                }
                 var remote = (EndPoint) _sender;
                 var recv = _mysocket.ReceiveFrom(data, ref remote);
                 var message = Encoding.ASCII.GetString(data, 0, recv);
@@ -52,12 +64,13 @@ namespace sublight_sv
                 leftRadio.Checked = true;
                 statusLabel.Text += @" Left is OK!";
             }
+             */
         }
 
         private void StartButtonClick(object sender, EventArgs e)
         {
             var file = new System.IO.StreamWriter(@"test.avs");
-            file.WriteLine(@"LoadPlugin(""as_sublight.dll"")
+            file.WriteLine(@"LoadPlugin(""c:\Users\Ado1ff\Documents\Visual Studio 2010\Projects\sublight\bin\Debug\as_sublight.dll"")
 return Sublight(DirectShowSource(""" + videoText.Text + @"""), PORT=" + this.portText.Text + @")");
             file.Close();
 
