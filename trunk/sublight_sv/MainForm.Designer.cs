@@ -109,7 +109,7 @@ namespace sublight_sv
             this.portText.Name = "portText";
             this.portText.Size = new System.Drawing.Size(100, 20);
             this.portText.TabIndex = 6;
-            this.portText.Text = "9050";
+            this.portText.Text = "12050";
             this.portText.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // openFileDialog

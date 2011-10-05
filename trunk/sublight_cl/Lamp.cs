@@ -15,7 +15,7 @@ namespace sublight_cl_net
         private readonly UInt16 _port;
 
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private readonly byte[] _data = new byte[8];
+        private readonly byte[] _data = new byte[1024];
         private EndPoint _remote;
 
         internal Lamp(UInt16 port, Side side)
@@ -23,8 +23,9 @@ namespace sublight_cl_net
             _side = side;
             _port = port;
 
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, _port)); //привязываем точку к нашему сокету
-            _remote = new IPEndPoint(IPAddress.Broadcast, 9051);
+            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
+            _mysocket.Bind(new IPEndPoint(IPAddress.Any, _port)); //Слушать будем 12050
+            _remote = new IPEndPoint(IPAddress.Any,0);
 
             SuspendLayout();
 
@@ -64,8 +65,8 @@ namespace sublight_cl_net
             {
                 try
                 {
-
                     _mysocket.ReceiveFrom(_data, ref _remote);
+                    //_mysocket.Receive(_data);
                 }
                 catch(Exception)
                 {
@@ -75,10 +76,11 @@ namespace sublight_cl_net
                 switch (_side)
                 {
                     case Side.Left:
-                        BackColor = Color.FromArgb(_data[1], _data[2], _data[3]);
+                        BackColor = Color.FromArgb(_data[5], _data[6], _data[7]);                        
                         break;
+
                     case Side.Right:
-                        BackColor = Color.FromArgb(_data[5], _data[6], _data[7]);
+                        BackColor = Color.FromArgb(_data[1], _data[2], _data[3]);
                         break;
                 }
                 Application.DoEvents();

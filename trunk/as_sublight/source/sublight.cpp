@@ -11,20 +11,22 @@
  * Constructor
  */
 Sublight::Sublight(PClip child, unsigned __int16 port, const char* const ip) : GenericVideoFilter(child), _port(port) {
-    WSADATA wsadata = {};
-    WSAStartup (MAKEWORD (2, 2), &wsadata);
+	char buff[10*1014];
+       // Шаг 1 - иницилизация библиотеки Winsocks
+    WSAStartup(0x202,(WSADATA *)&buff[0]);
 
-    this->_sd = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    // Шаг 2 - открытие сокета
+    this->_sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+ 
+    // Шаг 3 - обмен сообщений с сервером
+    //sockaddr_in dest_addr;
+ 
+    dest_addr.sin_family=AF_INET;
+    dest_addr.sin_port=htons(port);
+    dest_addr.sin_addr.s_addr=inet_addr( ip);
     
     BOOL bOptVal = TRUE;
     setsockopt(_sd, SOL_SOCKET, SO_BROADCAST, (char *)&bOptVal, sizeof(BOOL));
-
-    sockaddr_in addr = {};
-    addr.sin_family = AF_INET;
-    addr.sin_addr.S_un.S_addr = inet_addr (ip);
-    addr.sin_port = _port;
-
-    connect (this->_sd, (sockaddr*)&addr, sizeof(sockaddr_in));
 }
 
 /*
@@ -201,7 +203,9 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     unsigned __int64 data = ((unsigned __int64)outL << 32) + outR;
 
     // Sending to socket
-    send (_sd, (char*)&data, sizeof(data), 0);
+	sendto(_sd, (char*)&data,  sizeof(data), 0,
+        (sockaddr*)&dest_addr, sizeof(dest_addr));
+    //send (_sd, (char*)&data, sizeof(data), 0);
 
     // Return source
     return src;
