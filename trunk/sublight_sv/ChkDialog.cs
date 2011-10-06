@@ -74,7 +74,6 @@ namespace sublight_sv
 
             Visible = true;
             _progressBar.Maximum = 100;
-            StartSending();
         }
 
         private void StartTimer()

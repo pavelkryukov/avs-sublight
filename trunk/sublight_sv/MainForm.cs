@@ -10,6 +10,8 @@ namespace sublight_sv
         public bool Lchkd;
         public bool Rchkd;
 
+        private const string ScriptName = "script.avs";
+
         private ChkDialog _chkDialog;
 
         public MainForm()
@@ -33,7 +35,11 @@ namespace sublight_sv
      
         private void CheckButtonClick(object sender, EventArgs e)
         {
-            var t = new Thread(() => _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text)));
+            var t = new Thread(() =>
+                                   {
+                                       _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text));
+                                       _chkDialog.StartSending();
+                                   });
             t.Start();
             t.Join();
 
@@ -65,17 +71,19 @@ namespace sublight_sv
                        return;
                }
             }
-            var file = new System.IO.StreamWriter(@"test.avs");
-            file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")" + "\n" +
-            @"return Sublight(DirectShowSource(""" + videoText.Text +
-                                             @"""), PORT=" + portText.Text + @", IP=""255.255.255.255"")");
+            var file = new System.IO.StreamWriter(ScriptName);
+            file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")");
+            file.WriteLine(String.Format(@"return Sublight(DirectShowSource(""{0}""), PORT={1}, IP=""{2}"")",
+                                         videoText.Text,
+                                         portText.Text,
+                                         @"255.255.255.255"));
             file.Close();
 
             // Устанавливаем параметры запуска процесса
             var prc = new Process();
             if(playerText.Text.Length!=0)
                 prc.StartInfo.FileName = playerText.Text;
-            prc.StartInfo.Arguments = "test.avs";
+            prc.StartInfo.Arguments = ScriptName;
             prc.Start();
             prc.WaitForExit();
 
