@@ -9,24 +9,26 @@ namespace sublight_cl
     internal sealed class Lamp : Form
     {
         private readonly Label _sideLabel = new Label();
-        private readonly PictureBox _pictureBox = new PictureBox();
+        private readonly PictureBox _closeButton = new PictureBox();
 
         private readonly Side _side;
-        private readonly UInt16 _port;
 
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private EndPoint _remote;
+
+        private bool _isOn;
         
-        private const int Timeout = 10000;
+        private const int Timeout = 100;
 
         internal Lamp(UInt16 port, Side side)
         {
             _side = side;
-            _port = port;
 
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, _port)); //Слушать будем 12050
+            _mysocket.Bind(new IPEndPoint(IPAddress.Any, port)); //Слушать будем 12050
             _mysocket.ReceiveTimeout = Timeout;
+
+            _isOn = true;
 
             _remote = new IPEndPoint(IPAddress.Any,0);
 
@@ -46,11 +48,15 @@ namespace sublight_cl
             _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
             Controls.Add(_sideLabel);
 
-            _pictureBox.Size = new Size(64, 64);
-            _pictureBox.Location = new Point(Width - _pictureBox.Width, 0);
-            _pictureBox.Image = Properties.Resources.cross;
-            _pictureBox.Click += ((sender, e) => Application.Exit());
-            Controls.Add(_pictureBox);
+            _closeButton.Size = new Size(64, 64);
+            _closeButton.Location = new Point(Width - _closeButton.Width, 0);
+            _closeButton.Image = Properties.Resources.cross;
+            _closeButton.Click += ((sender, e) =>
+                                       {
+                                           _isOn = false;
+                                           Application.Exit();
+                                       });
+            Controls.Add(_closeButton);
 
             BackColor = Color.White;
             FormBorderStyle = FormBorderStyle.None;
@@ -99,14 +105,12 @@ namespace sublight_cl
                 }
                 catch (SocketException)
                 {
-                    var result = MessageBox.Show(@"Error while reading data from socket", @"Sublight receiver", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error);
-                    switch (result)
+                    if (!_isOn)
                     {
-                        case DialogResult.Retry:
-                            continue;
-                        case DialogResult.Cancel:
-                            return;
+                        break;
                     }
+                    Application.DoEvents();
+                    continue;
                 }
 
                 if ((data[0] == 0xA7) && (data[4] == 0xEB))
