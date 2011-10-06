@@ -227,11 +227,9 @@ namespace sublight_sv
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Label statusLabel;
-        private ChkDialog CheckDialog;
-        public System.Windows.Forms.CheckBox RcheckBox;
-        public System.Windows.Forms.CheckBox LcheckBox;
-        public bool lchkd;
-        public bool rchkd;
+        private System.Windows.Forms.CheckBox RcheckBox;
+        private System.Windows.Forms.CheckBox LcheckBox;
+
     }
 }
 
