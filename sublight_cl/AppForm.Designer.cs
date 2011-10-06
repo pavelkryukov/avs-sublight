@@ -34,7 +34,6 @@
             this.rightButton = new System.Windows.Forms.RadioButton();
             this.sideBox = new System.Windows.Forms.GroupBox();
             this.startButton = new System.Windows.Forms.Button();
-         //   this.stopButton = new System.Windows.Forms.Button();
             this.sideBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -98,23 +97,13 @@
             this.startButton.Text = "Start";
             this.startButton.UseVisualStyleBackColor = true;
             this.startButton.Click += new System.EventHandler(this.StartButtonClick);
-    /*        // 
-            // stopButton
-            // 
-            this.stopButton.Location = new System.Drawing.Point(213, 80);
-            this.stopButton.Name = "stopButton";
-            this.stopButton.Size = new System.Drawing.Size(75, 29);
-            this.stopButton.TabIndex = 6;
-            this.stopButton.Text = "Stop";
-            this.stopButton.UseVisualStyleBackColor = true;
-            this.stopButton.Click += new System.EventHandler(this.StopButtonClick);*/
             // 
             // AppForm
             // 
+            this.Icon = sublight_cl.Properties.Resources.Monitor;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(300, 141);
-       //     this.Controls.Add(this.stopButton);
             this.Controls.Add(this.startButton);
             this.Controls.Add(this.sideBox);
             this.Controls.Add(this.portLabel);

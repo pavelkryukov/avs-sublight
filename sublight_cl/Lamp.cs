@@ -25,7 +25,7 @@ namespace sublight_cl
             _side = side;
 
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, port)); //Слушать будем 12050
+            _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
             _mysocket.ReceiveTimeout = Timeout;
 
             _isOn = true;
@@ -37,7 +37,9 @@ namespace sublight_cl
             Top = 0;
             Left = 0;
             Width = Screen.PrimaryScreen.Bounds.Width;
-            Height = Screen.PrimaryScreen.Bounds.Height;
+            Height = Screen.PrimaryScreen.Bounds.Height; 
+            Icon = Properties.Resources.Monitor;
+
 
             _sideLabel.AutoSize = true;
             _sideLabel.Location = new Point(100, 100);
