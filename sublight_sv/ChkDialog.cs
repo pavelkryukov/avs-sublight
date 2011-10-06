@@ -10,7 +10,7 @@ namespace sublight_sv
         private readonly Socket _mysocket;
         private const string ChkL = "islok";
         private const string ChkR = "isrok";
-        private readonly IPEndPoint _sender = new IPEndPoint(IPAddress.Broadcast, 12050);
+        private readonly IPEndPoint _sender;
 
         private readonly ProgressBar _progressBar;
         private readonly Label _label;
@@ -28,7 +28,7 @@ namespace sublight_sv
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
             _mysocket.Blocking = false;
 
-            _sender.Port = port;
+            _sender = new IPEndPoint(IPAddress.Broadcast, port);
 
     //        components = new System.ComponentModel.Container();
             _progressBar = new ProgressBar();
