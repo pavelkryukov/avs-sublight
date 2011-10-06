@@ -156,6 +156,7 @@ namespace sublight_sv
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
+            this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.statusLabel.Location = new System.Drawing.Point(260, 63);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(46, 13);

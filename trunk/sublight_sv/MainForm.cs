@@ -15,7 +15,7 @@ namespace sublight_sv
         public MainForm()
         {
             InitializeComponent();
-            //playerText.Text = @".\utils\mpc-hc.exe";
+            playerText.Text = @".\..\utils\mpc-hc.exe";
         }
 
         private void ChoosePlayer(object sender, EventArgs e)
@@ -39,6 +39,17 @@ namespace sublight_sv
 
             LcheckBox.Checked = Lchkd;
             RcheckBox.Checked = Rchkd;
+            if (Lchkd)
+                this.statusLabel.Text = "Left is OK ";
+            if (Rchkd)
+                this.statusLabel.Text = "Right is OK ";
+            if (!Rchkd || !Lchkd)
+            {
+                this.statusLabel.Text = "No clients connected ";
+                this.startButton.Enabled = false;
+            }
+            if (Rchkd || Lchkd)
+                this.startButton.Enabled = true;
             Application.DoEvents();
 
         }
@@ -46,9 +57,9 @@ namespace sublight_sv
         private void StartButtonClick(object sender, EventArgs e)
         {
             var file = new System.IO.StreamWriter(@"test.avs");
-            file.WriteLine(@"LoadPlugin("".\as_sublight.dll"")" + "\n" +
+            file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")" + "\n" +
             @"return Sublight(DirectShowSource(""" + videoText.Text +
-                                             @"""), PORT=" + this.portText.Text + @"IP=""255.255.255.255"")")
+                                             @"""), PORT=" + this.portText.Text + @", IP=""255.255.255.255"")")
             ;
             file.Close();
 
