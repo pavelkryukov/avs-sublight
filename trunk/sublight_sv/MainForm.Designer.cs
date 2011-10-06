@@ -159,9 +159,9 @@ namespace sublight_sv
             this.statusLabel.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.statusLabel.Location = new System.Drawing.Point(260, 63);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(46, 13);
+            this.statusLabel.Size = new System.Drawing.Size(86, 13);
             this.statusLabel.TabIndex = 11;
-            this.statusLabel.Text = "Status...";
+            this.statusLabel.Text = "Not checked yet";
             // 
             // RcheckBox
             // 
@@ -205,8 +205,10 @@ namespace sublight_sv
             this.Controls.Add(this.label1);
             this.Controls.Add(this.playerText);
             this.Controls.Add(this.selectPlayerButton);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Sublight server";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

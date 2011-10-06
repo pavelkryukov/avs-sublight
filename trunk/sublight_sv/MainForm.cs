@@ -15,7 +15,7 @@ namespace sublight_sv
         public MainForm()
         {
             InitializeComponent();
-            playerText.Text = @".\..\utils\mpc-hc.exe";
+            playerText.Text = @".\..\..\utils\mpc-hc.exe";
         }
 
         private void ChoosePlayer(object sender, EventArgs e)
@@ -46,16 +46,25 @@ namespace sublight_sv
             if (!Rchkd || !Lchkd)
             {
                 this.statusLabel.Text = "No clients connected ";
-                this.startButton.Enabled = false;
             }
-            if (Rchkd || Lchkd)
-                this.startButton.Enabled = true;
             Application.DoEvents();
 
         }
 
         private void StartButtonClick(object sender, EventArgs e)
         {
+            if (!Rchkd || !Lchkd)
+            {
+               var result = MessageBox.Show("Connection hasn't been ckecked yet. Continue?", "Sublight server", 
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+               switch (result)
+               {
+                   case DialogResult.OK:
+                       break;
+                   case DialogResult.Cancel:
+                       return;
+               }
+            }
             var file = new System.IO.StreamWriter(@"test.avs");
             file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")" + "\n" +
             @"return Sublight(DirectShowSource(""" + videoText.Text +
