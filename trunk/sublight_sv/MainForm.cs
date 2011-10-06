@@ -10,7 +10,7 @@ namespace sublight_sv
         public bool Lchkd;
         public bool Rchkd;
 
-        private ChkDialog chkDialog;
+        private ChkDialog _chkDialog;
 
         public MainForm()
         {
@@ -33,19 +33,19 @@ namespace sublight_sv
      
         private void CheckButtonClick(object sender, EventArgs e)
         {
-            var t = new Thread(() => chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text)));
+            var t = new Thread(() => _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text)));
             t.Start();
             t.Join();
 
             LcheckBox.Checked = Lchkd;
             RcheckBox.Checked = Rchkd;
             if (Lchkd)
-                this.statusLabel.Text = "Left is OK ";
+                statusLabel.Text = @"Left is OK ";
             if (Rchkd)
-                this.statusLabel.Text = "Right is OK ";
+                statusLabel.Text = @"Right is OK ";
             if (!Rchkd || !Lchkd)
             {
-                this.statusLabel.Text = "No clients connected ";
+                statusLabel.Text = @"No clients connected ";
             }
             Application.DoEvents();
 
@@ -55,7 +55,7 @@ namespace sublight_sv
         {
             if (!Rchkd || !Lchkd)
             {
-               var result = MessageBox.Show("Connection hasn't been ckecked yet. Continue?", "Sublight server", 
+               var result = MessageBox.Show(@"Connection hasn't been ckecked yet. Continue?", @"Sublight server", 
                     MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
                switch (result)
                {
@@ -68,8 +68,7 @@ namespace sublight_sv
             var file = new System.IO.StreamWriter(@"test.avs");
             file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")" + "\n" +
             @"return Sublight(DirectShowSource(""" + videoText.Text +
-                                             @"""), PORT=" + this.portText.Text + @", IP=""255.255.255.255"")")
-            ;
+                                             @"""), PORT=" + portText.Text + @", IP=""255.255.255.255"")");
             file.Close();
 
             // Устанавливаем параметры запуска процесса
