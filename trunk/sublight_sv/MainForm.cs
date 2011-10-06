@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Net.Sockets;
@@ -10,17 +9,17 @@ namespace sublight_sv
 {
     public partial class MainForm : Form
     {
-        public readonly Socket _mysocket;
+        public readonly Socket Mysocket;
         public string ChkL = "islok";
         public string ChkR = "isrok";
-        public readonly IPEndPoint _sender = new IPEndPoint(IPAddress.Broadcast, 12050);//Слать пакеты будем на 9050
+        public readonly IPEndPoint Sender = new IPEndPoint(IPAddress.Broadcast, 12050);//Слать пакеты будем на 9050
 
         public MainForm()
         {
-            _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, 12051));//Cлушаем приходящие пакеты на 12051
-            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast,true);
-            _mysocket.Blocking = false;
+            Mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            Mysocket.Bind(new IPEndPoint(IPAddress.Any, 12051));//Cлушаем приходящие пакеты на 12051
+            Mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast,true);
+            Mysocket.Blocking = false;
 
             InitializeComponent();
             //playerText.Text = @".\utils\mpc-hc.exe";
@@ -41,9 +40,9 @@ namespace sublight_sv
      
         private void CheckButtonClick(object sender, EventArgs e)
         {
-            _sender.Port = Convert.ToInt32(portText.Text);
+            Sender.Port = Convert.ToInt32(portText.Text);
 
-            Thread t = new Thread(() => CheckDialog = new ChkDialog(this));
+            var t = new Thread(() => CheckDialog = new ChkDialog(this));
             t.Start();
             t.Join();
 
@@ -56,8 +55,10 @@ namespace sublight_sv
         private void StartButtonClick(object sender, EventArgs e)
         {
             var file = new System.IO.StreamWriter(@"test.avs");
-            file.WriteLine(@"LoadPlugin(""c:\Users\Ado1ff\Documents\Visual Studio 2010\Projects\sublight\bin\Debug\as_sublight.dll"")
-return Sublight(DirectShowSource(""" + videoText.Text + @"""), PORT=" + this.portText.Text + @")");
+            file.WriteLine(@"LoadPlugin("".\as_sublight.dll"")" + "\n" +
+            @"return Sublight(DirectShowSource(""" + videoText.Text +
+                                             @"""), PORT=" + this.portText.Text + @"IP=""255.255.255.255"")")
+            ;
             file.Close();
 
             // Устанавливаем параметры запуска процесса
