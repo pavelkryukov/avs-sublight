@@ -63,6 +63,9 @@ namespace sublight_sv
             // ChkDialog
             // 
             ClientSize = new System.Drawing.Size(242, 74);
+            Icon = Properties.Resources.MonitorIco;
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            MaximizeBox = false;
             Controls.Add(_label);
             Controls.Add(_progressBar);
             Name = "ChkDialog";

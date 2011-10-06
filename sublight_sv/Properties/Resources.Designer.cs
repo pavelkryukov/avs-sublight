@@ -66,5 +66,12 @@ namespace sublight_sv.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        internal static System.Drawing.Icon MonitorIco {
+            get {
+                object obj = ResourceManager.GetObject("MonitorIco", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }
