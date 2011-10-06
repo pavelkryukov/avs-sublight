@@ -28,9 +28,11 @@ void Sublight::Send(unsigned __int64 data) {
  * Converter form YUV to RGB
 */
 unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V) {
-    const signed __int32 R = (298 * ((signed __int32)Y - 16) +                                   409 * ((signed __int32)V - 128) + 128) >> 8;
-    const signed __int32 G = (298 * ((signed __int32)Y - 16) - 100 * ((signed __int32)U - 128) - 208 * ((signed __int32)V - 128) + 128) >> 8;
-    const signed __int32 B = (298 * ((signed __int32)Y - 16) + 516 * ((signed __int32)U - 128)                                   + 128) >> 8;
+    const signed __int32 Yp = 298 * ((signed __int32)Y - 16) + 128;
+
+    const signed __int32 R = (Yp +                                   409 * ((signed __int32)V - 128)) >> 8;
+    const signed __int32 G = (Yp - 100 * ((signed __int32)U - 128) - 208 * ((signed __int32)V - 128)) >> 8;
+    const signed __int32 B = (Yp + 516 * ((signed __int32)U - 128)                                  ) >> 8;
   
     unsigned __int32 out = 0x00000000;
     out += (CUT(R) << 8) + (CUT(G) << 16) + (CUT(B) << 24);
