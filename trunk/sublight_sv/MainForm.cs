@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Diagnostics;
-using System.Net.Sockets;
-using System.Net;
 using System.Threading;
 
 namespace sublight_sv
 {
     public partial class MainForm : Form
     {
-        public readonly Socket Mysocket;
-        public string ChkL = "islok";
-        public string ChkR = "isrok";
-        public readonly IPEndPoint Sender = new IPEndPoint(IPAddress.Broadcast, 12050);//Слать пакеты будем на 9050
+        public bool Lchkd;
+        public bool Rchkd;
+
+        private ChkDialog chkDialog;
 
         public MainForm()
         {
-            Mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            Mysocket.Bind(new IPEndPoint(IPAddress.Any, 12051));//Cлушаем приходящие пакеты на 12051
-            Mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast,true);
-            Mysocket.Blocking = false;
-
             InitializeComponent();
             //playerText.Text = @".\utils\mpc-hc.exe";
         }
@@ -40,14 +33,12 @@ namespace sublight_sv
      
         private void CheckButtonClick(object sender, EventArgs e)
         {
-            Sender.Port = Convert.ToInt32(portText.Text);
-
-            var t = new Thread(() => CheckDialog = new ChkDialog(this));
+            var t = new Thread(() => chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text)));
             t.Start();
             t.Join();
 
-            LcheckBox.Checked = lchkd;
-            RcheckBox.Checked = rchkd;
+            LcheckBox.Checked = Lchkd;
+            RcheckBox.Checked = Rchkd;
             Application.DoEvents();
 
         }

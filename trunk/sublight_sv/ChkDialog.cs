@@ -7,16 +7,28 @@ namespace sublight_sv
 {
     public class ChkDialog : Form
     {
+        private readonly Socket _mysocket;
+        private const string ChkL = "islok";
+        private const string ChkR = "isrok";
+        private readonly IPEndPoint _sender = new IPEndPoint(IPAddress.Broadcast, 12050);
+
         private readonly ProgressBar _progressBar;
         private readonly Label _label;
         private readonly Timer _timer;
-       // private readonly System.ComponentModel.IContainer components;
         private readonly MainForm _parent;
+
         private int _i;
 
-        public ChkDialog(MainForm parent)
+        public ChkDialog(MainForm parent, System.Int16 port)
         {
             _parent = parent;
+
+            _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            _mysocket.Bind(new IPEndPoint(IPAddress.Any, 12051));//Cлушаем приходящие пакеты на 12051
+            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
+            _mysocket.Blocking = false;
+
+            _sender.Port = port;
 
     //        components = new System.ComponentModel.Container();
             _progressBar = new ProgressBar();
@@ -74,32 +86,32 @@ namespace sublight_sv
             var recv = 0;
             const int steps = 2;
 
-            _parent.lchkd = false;
-            _parent.rchkd = false;
+            _parent.Lchkd = false;
+            _parent.Rchkd = false;
 
             for (var a = 1; a <= steps; a++)
             {
                 StartTimer();
                 Application.DoEvents();
 
-                var sLdata = Encoding.ASCII.GetBytes(_parent.ChkL);
+                var sLdata = Encoding.ASCII.GetBytes(ChkL);
 
-                _parent.Mysocket.SendTo(sLdata, sLdata.Length, SocketFlags.None, _parent.Sender);
-                var remote = (EndPoint)_parent.Sender;
+                _mysocket.SendTo(sLdata, sLdata.Length, SocketFlags.None, _sender);
+                var remote = (EndPoint)_sender;
                 while (_i <= 3)//Wait for ansver 3 timer ticks
                 {
                     Application.DoEvents();
-                    recv = _parent.Mysocket.Available;
+                    recv = _mysocket.Available;
                     if (recv > 0)
                     {
-                        recv = _parent.Mysocket.ReceiveFrom(rdata, ref remote);
+                        recv = _mysocket.ReceiveFrom(rdata, ref remote);
                         break;
                     }
                 }
 
                 if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("lisok"))
                 {
-                    _parent.lchkd = true;
+                    _parent.Lchkd = true;
                     _progressBar.Value = _progressBar.Maximum / 2;
                     Application.DoEvents();
                     break;
@@ -115,24 +127,24 @@ namespace sublight_sv
                 StartTimer();
                 Application.DoEvents();
 
-                var sRdata = Encoding.ASCII.GetBytes(_parent.ChkR);
+                var sRdata = Encoding.ASCII.GetBytes(ChkR);
 
-                _parent.Mysocket.SendTo(sRdata, sRdata.Length, SocketFlags.None, _parent.Sender);
-                var remote = (EndPoint)_parent.Sender;
+                _mysocket.SendTo(sRdata, sRdata.Length, SocketFlags.None, _sender);
+                var remote = (EndPoint)_sender;
                 while (_i <= 3)//Wait for ansver 2 timer ticks
                 {
                     Application.DoEvents();
-                    recv = _parent.Mysocket.Available;
+                    recv = _mysocket.Available;
                     if (recv > 0)
                     {
-                        recv = _parent.Mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
+                        recv = _mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
                         break;
                     }
                 }
 
                 if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("risok"))
                 {
-                    _parent.rchkd = true;
+                    _parent.Rchkd = true;
                     _progressBar.Value = _progressBar.Maximum;
                     Application.DoEvents();
                     break;
@@ -143,6 +155,8 @@ namespace sublight_sv
                 _timer.Stop();
             }
             _progressBar.Value = _progressBar.Maximum;
+
+            _mysocket.Close();
             Application.DoEvents();
             Close();
         }
