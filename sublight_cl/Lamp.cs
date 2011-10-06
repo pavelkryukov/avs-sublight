@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Net.Sockets;
@@ -113,6 +112,14 @@ namespace sublight_cl
                 if ((data[0] == 0xA7) && (data[4] == 0xEB))
                 {
                     BackColor = Color.FromArgb(data[r], data[g], data[b]);
+                }
+                else if (System.Text.Encoding.ASCII.GetString(data).Equals("islok\0\0\0") && (_side == Side.Left))
+                {
+                    _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("lisok"), 5, SocketFlags.None, _remote);
+                }
+                else if (System.Text.Encoding.ASCII.GetString(data).Equals("isrok\0\0\0") && (_side == Side.Right))
+                {
+                    _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("risok"), 5, SocketFlags.None, _remote);
                 }
                 
                 Application.DoEvents();
