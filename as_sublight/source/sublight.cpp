@@ -1,36 +1,26 @@
 /*
  * subilight.cpp
  *
+ * AVS filter for founding average color on frame sides
  *
  * Copyright 2011 Kryukov Pavel.
 */
-
-#pragma comment(lib, "Ws2_32.lib")
 
 #include "sublight.h"
 /*
  * Constructor
  */
-Sublight::Sublight(PClip child, unsigned __int16 port, const char* const ip) : GenericVideoFilter(child) {
-    WSADATA wsadata = {};
-    WSAStartup (MAKEWORD (2, 2), &wsadata);
+Sublight::Sublight(PClip child) : GenericVideoFilter(child) {
 
-    this->_sd = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
- 
-    dest_addr.sin_family=AF_INET;
-    dest_addr.sin_port=htons(port);
-    dest_addr.sin_addr.s_addr=inet_addr( ip);
-    
-    BOOL bOptVal = TRUE;
-    setsockopt(_sd, SOL_SOCKET, SO_BROADCAST, (char *)&bOptVal, sizeof(BOOL));
 }
 
 /*
- * Destructor
- */
-Sublight::~Sublight() {
-    closesocket (this->_sd);
+ * Abstract sender
+*/
+void Sublight::Send(unsigned __int64 data) {
+
 }
+
 
 #define CUT(a) ((a > 255) ? 255 : (a < 0 ? 0 : (unsigned __int32)a)) 
 
@@ -194,8 +184,7 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     unsigned __int64 data = (((unsigned __int64)outL << 32) + outR) | Sublight::CONTROLMASK;
 
     // Sending to socket
-	sendto(_sd, (char*)&data,  sizeof(data), 0,
-        (sockaddr*)&dest_addr, sizeof(dest_addr));
+    this->Send(data);
 
     // Return source
     return src;

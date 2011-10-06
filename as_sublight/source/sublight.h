@@ -1,7 +1,7 @@
 /*
  * sublight.h
  *
- * sublight plugin for AviSynth
+ * AVS filter for founding average color on frame sides
  *
  * Copyright 2011 Kryukov Pavel.
 */
@@ -12,21 +12,18 @@
 // WinAPI
 #include <Windows.h>
 
-// Windows socket header
-#include <WinSock.h>
-
 // AviSynth SDK
 #include "./avisynth.h"
 
 class Sublight : public GenericVideoFilter {
   private:
     static const unsigned __int64 CONTROLMASK = 0x000000EB000000A7;
-    SOCKET _sd;
-	sockaddr_in dest_addr;
+
+    virtual void Send(unsigned __int64 data);
+
     static unsigned __int32 YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V);
   public:
-    Sublight(PClip child, const unsigned __int16 port, const char* const ip);
-    ~Sublight();
+    Sublight(PClip child);
     PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };
 

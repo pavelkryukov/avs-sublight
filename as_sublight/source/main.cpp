@@ -12,14 +12,14 @@
 // AviSynth SDK
 #include "./avisynth.h"
 
-#include "sublight.h"
+#include "sublightUDP.h"
 
 /*
  * Call of constructor
 */
 AVSValue __cdecl Create_Sublight( AVSValue args, void* user_data, IScriptEnvironment* env) 
 {
-    return new Sublight( args[0].AsClip(), args[1].AsInt(), args[2].AsString());  
+    return new SublightUDP( args[0].AsClip(), args[1].AsInt(), args[2].AsString());  
 }
 
 /*
