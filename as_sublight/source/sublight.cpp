@@ -85,9 +85,9 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
     if (this->vi.IsRGB24() || this->vi.IsRGB32()) {
 
         // If format is RGB, collect colors into int32
-        return ((unsigned __int8)average[0] << 24) + 
-               ((unsigned __int8)average[1] << 16) + 
-               ((unsigned __int8)average[2] << 8);
+        return ((unsigned __int32)CUT(average[0]) << 24) + 
+               ((unsigned __int32)CUT(average[1]) << 16) + 
+               ((unsigned __int32)CUT(average[2]) << 8);
     }
     else if (this->vi.IsYUY2()) {
         // If format isn't RGB, recount colors into RGB
