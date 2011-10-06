@@ -106,6 +106,7 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="source\sublight.cpp" />
+    <ClCompile Include="source\sublightUDP.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts/debug.avs" />
@@ -114,6 +115,7 @@
   <ItemGroup>
     <ClInclude Include="source\avisynth.h" />
     <ClInclude Include="source\sublight.h" />
+    <ClInclude Include="source\sublightUDP.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
