@@ -19,13 +19,10 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
 void Sublight::Send(unsigned __int64 data) {}
 
 // Cutting to one byte
-#define CUT(a)     ((a > 0xFF) ? 0xFF : (a < 0 ? 0 : (unsigned __int32)a)) 
+#define CUT(a)     ((a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (unsigned __int32)a)) 
 
 // Collecting two __int32 into one __int64
 #define PACK(l, r) (((unsigned __int64)l << 32) + r) | 0x000000EB000000A7
-
-// Max size of arr
-#define MAXBPP     4
 
 /*
  * Converter form YUV to RGB
@@ -63,11 +60,7 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
     const unsigned __int32 averageSize = width_w * height / bpp;
 
     // average stores
-    unsigned __int32 average[MAXBPP];
-
-    for (unsigned i = 0; i < bpp; i++) {
-        average[i] = 0;
-    }
+    unsigned __int32 average[4] = {0, 0, 0, 0};
 
     for (unsigned h = 0; h < height; h++) {
         for (unsigned w = 0; w < width_w;) {
@@ -129,7 +122,7 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src, bool side) const {
     const unsigned width_w = width >> 2;
 
     // Average stores
-    unsigned __int32 average = 0;
+    register unsigned __int32 average = 0;
 
     // Counting average on Y
     for (unsigned h = 0; h < height; h++) {
@@ -146,7 +139,7 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src, bool side) const {
     const unsigned widthUV_w = widthUV >> 2;    
     const unsigned __int32 averageUVSize = widthUV_w * heightUV;
  
-    unsigned __int32 averageU = 0;
+    register unsigned __int32 averageU = 0;
 
     for (unsigned h = 0; h < heightUV; h++) {
         for (unsigned w = 0; w < widthUV_w; w++) {
@@ -157,11 +150,11 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src, bool side) const {
         
     averageU = averageU / averageUVSize;
 
-    unsigned __int32 averageV = 0;
+    register unsigned __int32 averageV = 0;
         
     for (unsigned h = 0; h < heightUV; h++) {
          for (unsigned w = 0; w < widthUV_w; w++) {
-             average += *(srcVp + w);
+             averageV += *(srcVp + w);
         }
         srcVp += pitchUV;
     }
