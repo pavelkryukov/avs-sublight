@@ -11,9 +11,11 @@
  * Constructor
  */
 Sublight::Sublight(PClip child) : GenericVideoFilter(child),
-                                  getAverage(vi.IsYV12() ?
+                                  _getAverage(vi.IsYV12() ?
                                                 &Sublight::GetAverageYV12 :
-                                                &Sublight::GetAverageIL) {}
+                                                &Sublight::GetAverageIL),
+                                 _bpp(vi.IsRGB24() ? 3 : 2)                              
+                                                {}
 
 /*
  * Converter form YUV to RGB
@@ -47,12 +49,8 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
     // we will count average on working area
     const unsigned width_w = width >> 2;
 
-    // Get bpp
-    const unsigned __int8 bpp = (this->vi.IsYUY2() || this->vi.IsRGB32()) ? 4 :
-                                            (this->vi.IsRGB24() ? 3 : 1);
-
     // averageSize - size of working area in pixels
-    const unsigned __int32 averageSize = width_w * height / bpp;
+    const unsigned __int32 averageSize = width_w * height / _bpp;
 
     // average stores
     unsigned __int32 average[4] = {0, 0, 0, 0};
@@ -62,16 +60,17 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
              average[0] += *(srcp + w++);
              average[1] += *(srcp + w++);
              average[2] += *(srcp + w++);
-             if (bpp == 4) {
+             if (_bpp == 4) {
                  average[3] += *(srcp + w++);
              }
          }
          srcp += pitch;
     }
 
-    for (unsigned i = 0; i < bpp; i++) {
-        average[i] = average[i] / averageSize;
-    }
+    average[0] /= averageSize;
+    average[1] /= averageSize;
+    average[2] /= averageSize;
+    average[3] /= averageSize;
 
     // If format is RGB, collect colors into int32
     return this->vi.IsRGB() ? Sublight::PACKRGB(average[2],
@@ -156,8 +155,8 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src,
 PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     const PVideoFrame src = child->GetFrame(n, env);
 
-    this->Send(Sublight::PACK((this->*getAverage)(src, true),
-                              (this->*getAverage)(src, false)));
+    this->Send(Sublight::PACK((this->*_getAverage)(src, true),
+                              (this->*_getAverage)(src, false)));
 
     return src;
 }
