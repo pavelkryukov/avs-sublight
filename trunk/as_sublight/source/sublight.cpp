@@ -59,9 +59,12 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
 
     for (unsigned h = 0; h < height; h++) {
         for (unsigned w = 0; w < width_w;) {
-            for (unsigned i = 0; i < bpp; i++) {
-                average[i] += *(srcp + w++);
-            }
+             average[0] += *(srcp + w++);
+             average[1] += *(srcp + w++);
+             average[2] += *(srcp + w++);
+             if (bpp == 4) {
+                 average[3] += *(srcp + w++);
+             }
          }
          srcp += pitch;
     }
