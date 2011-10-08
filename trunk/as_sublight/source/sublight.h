@@ -6,8 +6,8 @@
  * Copyright 2011 Kryukov Pavel.
 */
 
-#ifndef __SUBLIGHT_H_
-#define __SUBLIGHT_H_
+#ifndef AS_SUBLIGHT_SOURCE_SUBLIGHT_H_
+#define AS_SUBLIGHT_SOURCE_SUBLIGHT_H_
 
 // WinAPI
 #include <Windows.h>
@@ -17,17 +17,49 @@
 
 class Sublight : public GenericVideoFilter {
   private:
-    static unsigned __int32 YUVtoRGB(unsigned __int32 Y, unsigned __int32 U, unsigned __int32 V);
-    
+    // Trim 4-byte number to 1-byte
+    static inline unsigned __int32 CUT(unsigned __int32 a) {
+        return ((a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : a));
+    }
+
+    static inline unsigned __int32 CUT(signed __int32 a) {
+        return ((a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (unsigned __int32)a));
+    }
+
+    // Packing r, g, b into one byte
+    static inline unsigned __int32 PACKRGB(unsigned __int32 r,
+                                           unsigned __int32 g,
+                                           unsigned __int32 b) {
+        return (CUT(r) << 8) + (CUT(g) << 16) + (CUT(b) << 24);
+    }
+
+    static inline unsigned __int32 PACKRGB(signed __int32 r,
+                                           signed __int32 g,
+                                           signed __int32 b) {
+        return (CUT(r) << 8) + (CUT(g) << 16) + (CUT(b) << 24);
+    }
+
+    // Collecting two __int32 into one __int64
+    static inline unsigned __int64 PACK(unsigned __int32 l,
+                                        unsigned __int32 r) {
+        return (((unsigned __int64)l << 32) + r) | 0x000000EB000000A7;
+    }
+
+    static unsigned __int32 YUVtoRGB(unsigned __int32 Y,
+                                     unsigned __int32 U,
+                                     unsigned __int32 V);
+
     unsigned __int32 GetAverageYV12(PVideoFrame src, bool side) const;
     unsigned __int32 GetAverageIL(PVideoFrame src, bool side) const;
 
     unsigned __int32(Sublight::*getAverage)(PVideoFrame src, bool side) const;
 
-    virtual void Send(unsigned __int64 data);
+    virtual void Send(unsigned __int64 data) = 0;
   public:
-    Sublight(PClip child);
+    explicit Sublight(PClip child);
+
+    // DO NOT make this method 'const'
     PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
 };
 
-#endif  // __SUBLIGHT_H_
+#endif  // AS_SUBLIGHT_SOURCE_SUBLIGHT_H_
