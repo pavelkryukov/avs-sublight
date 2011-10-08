@@ -19,11 +19,11 @@ class Sublight : public GenericVideoFilter {
   private:
     // Trim 4-byte number to 1-byte
     static inline unsigned __int32 CUT(unsigned __int32 a) {
-        return ((a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : a));
+        return a > 0xFF ? 0xFF : a;
     }
 
-    static inline unsigned __int32 CUT(signed __int32 a) {
-        return ((a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (unsigned __int32)a));
+    static inline unsigned __int32 CUTS(signed __int32 a) {
+        return (a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (unsigned __int32)a);
     }
 
     // Packing r, g, b into one byte
@@ -36,7 +36,7 @@ class Sublight : public GenericVideoFilter {
     static inline unsigned __int32 PACKRGBS(signed __int32 r,
                                             signed __int32 g,
                                             signed __int32 b) {
-        return (CUT(r) + (CUT(g) << 8) + (CUT(b) << 16)) << 8;
+        return (CUTS(r) + (CUTS(g) << 8) + (CUTS(b) << 16)) << 8;
     }
 
     // Collecting two __int32 into one __int64
