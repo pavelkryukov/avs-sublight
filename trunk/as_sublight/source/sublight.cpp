@@ -28,7 +28,7 @@ unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y,
                                    208 * ((signed __int32)V - 128)) >> 8;
     const signed __int32 B = (Yp + 516 * ((signed __int32)U - 128)) >> 8;
 
-    return PACKRGB(R, G, B);
+    return Sublight::PACKRGBS(R, G, B);
 }
 
 unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
@@ -70,19 +70,14 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
         average[i] = average[i] / averageSize;
     }
 
-    if (this->vi.IsRGB24() || this->vi.IsRGB32()) {
-        // If format is RGB, collect colors into int32
-        return PACKRGB(average[2], average[1], average[0]);
-    }
-    else if (this->vi.IsYUY2()) {
-        // If format isn't RGB, recount colors into RGB
-        return Sublight::YUVtoRGB((average[0] >> 1) + (average[2] >> 1),
-                                   average[1],
-                                   average[3]);
-    }
-    else {
-        return 0;
-    }
+    // If format is RGB, collect colors into int32
+    return this->vi.IsRGB() ? Sublight::PACKRGB(average[2],
+                                                average[1],
+                                                average[0]) :
+                              Sublight::YUVtoRGB((average[0] >> 1) +
+                                                 (average[2] >> 1),
+                                                 average[1],
+                                                 average[3]);
 }
 
 unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src,
@@ -146,9 +141,9 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src,
     }
 
     // Make output bytes
-    return YUVtoRGB(average / (width_w * height),
-                    averageU / averageUVSize,
-                    averageV / averageUVSize);
+    return Sublight::YUVtoRGB(average / (width_w * height),
+                              averageU / averageUVSize,
+                              averageV / averageUVSize);
 }
 
 
@@ -158,8 +153,8 @@ unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src,
 PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     const PVideoFrame src = child->GetFrame(n, env);
 
-    this->Send(PACK((this->*getAverage)(src, true),
-                    (this->*getAverage)(src, false)));
+    this->Send(Sublight::PACK((this->*getAverage)(src, true),
+                              (this->*getAverage)(src, false)));
 
     return src;
 }

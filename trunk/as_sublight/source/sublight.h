@@ -30,13 +30,13 @@ class Sublight : public GenericVideoFilter {
     static inline unsigned __int32 PACKRGB(unsigned __int32 r,
                                            unsigned __int32 g,
                                            unsigned __int32 b) {
-        return (CUT(r) << 8) + (CUT(g) << 16) + (CUT(b) << 24);
+        return (CUT(r) + (CUT(g) << 8) + (CUT(b) << 16)) << 8;
     }
 
-    static inline unsigned __int32 PACKRGB(signed __int32 r,
-                                           signed __int32 g,
-                                           signed __int32 b) {
-        return (CUT(r) << 8) + (CUT(g) << 16) + (CUT(b) << 24);
+    static inline unsigned __int32 PACKRGBS(signed __int32 r,
+                                            signed __int32 g,
+                                            signed __int32 b) {
+        return (CUT(r) + (CUT(g) << 8) + (CUT(b) << 16)) << 8;
     }
 
     // Collecting two __int32 into one __int64
