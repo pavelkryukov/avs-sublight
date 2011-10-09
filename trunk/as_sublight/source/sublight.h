@@ -45,10 +45,12 @@ class Sublight : public GenericVideoFilter {
 
     static uint32 YUVtoRGB(uint32 Y, uint32 U, uint32 V);
 
-    uint32 GetAverageYV12(const PVideoFrame src, bool side) const;
-    uint32 GetAverageIL(const PVideoFrame src, bool side) const;
+    static const unsigned _steps = 1;
 
-    uint32(Sublight::*const _getAverage)(const PVideoFrame src, bool side) const;
+    uint32 GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const;
+    uint32 GetAverageIL(const PVideoFrame src, bool side, unsigned step) const;
+
+    uint32(Sublight::*const _getAverage)(const PVideoFrame src, bool side, unsigned step) const;
 
     virtual void Send(uint64 data) const = 0;
 
