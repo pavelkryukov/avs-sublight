@@ -33,7 +33,7 @@ unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y,
     return Sublight::PACKRGBS(R, G, B);
 }
 
-unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
+unsigned __int32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
     const unsigned height = src->GetHeight();
@@ -82,7 +82,7 @@ unsigned __int32 Sublight::GetAverageIL(PVideoFrame src, bool side) const {
                                                  average[3]);
 }
 
-unsigned __int32 Sublight::GetAverageYV12(PVideoFrame src,
+unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
                                             bool side) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
