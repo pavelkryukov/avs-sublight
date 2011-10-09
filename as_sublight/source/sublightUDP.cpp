@@ -30,7 +30,7 @@ SublightUDP::~SublightUDP() {
     closesocket(this->_sd);
 }
 
-void SublightUDP::Send(unsigned __int64 data) {
+void SublightUDP::Send(unsigned __int64 data) const {
     sendto(_sd, (char*)&data,  sizeof(data), 0,
         (sockaddr*)&dest_addr, sizeof(dest_addr));
 }
