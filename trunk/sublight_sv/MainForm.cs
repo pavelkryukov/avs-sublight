@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System.Threading;
+using System.IO;
 
 namespace sublight_sv
 {
@@ -35,11 +34,11 @@ namespace sublight_sv
      
         private void CheckButtonClick(object sender, EventArgs e)
         {
-            var t = new Thread(() =>
-                                   {
-                                       _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text));
-                                       _chkDialog.StartSending();
-                                   });
+            var t = new System.Threading.Thread(() =>
+                                                    {
+                                                        _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text));
+                                                        _chkDialog.StartSending();
+                                                    });
             t.Start();
             t.Join();
 
@@ -71,7 +70,7 @@ namespace sublight_sv
                        return;
                }
             }
-            var file = new System.IO.StreamWriter(ScriptName);
+            var file = new StreamWriter(ScriptName);
             file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")");
             file.WriteLine(String.Format(@"return Sublight(DirectShowSource(""{0}""), PORT={1}, IP=""{2}"")",
                                          videoText.Text,
@@ -80,14 +79,15 @@ namespace sublight_sv
             file.Close();
 
             // Устанавливаем параметры запуска процесса
-            var prc = new Process();
+            var prc = new System.Diagnostics.Process();
             if(playerText.Text.Length!=0)
                 prc.StartInfo.FileName = playerText.Text;
             prc.StartInfo.Arguments = ScriptName;
             prc.Start();
             prc.WaitForExit();
-
             prc.Close();
+
+            File.Delete(ScriptName);
         }
     }
 }
