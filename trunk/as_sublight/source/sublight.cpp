@@ -14,7 +14,7 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
                                   _getAverage(vi.IsYV12() ?
                                                 &Sublight::GetAverageYV12 :
                                                 &Sublight::GetAverageIL),
-                                 _bpp(vi.IsRGB24() ? 3 : 2)                              
+                                 _bpp(vi.IsRGB24() ? 3 : 4)                              
                                                 {}
 
 /*
