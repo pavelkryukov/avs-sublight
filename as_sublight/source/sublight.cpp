@@ -31,10 +31,10 @@ uint32 Sublight::YUVtoRGB(uint32 Y, uint32 U, uint32 V) {
     return Sublight::PACKRGBS(R, G, B);
 }
 
-uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
+uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
-    const unsigned height = src->GetHeight();
+    const unsigned height = src->GetHeight() / this->_steps;
     const unsigned pitch  = src->GetPitch();
 
     // Get source pointers
@@ -42,6 +42,9 @@ uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
     // R - is 3/4 of the first line
     const pixel* srcp = side ? src->GetReadPtr() :
                            src->GetReadPtr() + (width >> 1)  + (width >> 2);
+
+    // Step offset
+    srcp += height * step;
 
     // width_w - working area width
     // we will count average on working area
@@ -80,15 +83,15 @@ uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
                                                  average[3]);
 }
 
-uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side) const {
+uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
-    const unsigned height = src->GetHeight();
+    const unsigned height = src->GetHeight() / this->_steps;
     const unsigned pitch  = src->GetPitch();
 
     const unsigned widthUV  = src->GetRowSize(PLANAR_U);
     const unsigned pitchUV  = src->GetPitch(PLANAR_U);
-    const unsigned heightUV = src->GetHeight(PLANAR_U);
+    const unsigned heightUV = src->GetHeight(PLANAR_U) / this->_steps;
 
     // Get source pointers
     // L - is beginning of the frame
@@ -101,6 +104,11 @@ uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side) const {
         srcUp += (widthUV >> 1)  + (widthUV >> 2);
         srcVp += (widthUV >> 1)  + (widthUV >> 2);
     }
+
+    // Step offset
+    srcp  += height * step;
+    srcUp += heightUV * step;
+    srcVp += heightUV * step;
 
     // width_w - working area width
     // we will count average on working area
@@ -152,8 +160,8 @@ uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side) const {
 PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     const PVideoFrame src = child->GetFrame(n, env);
 
-    this->Send(Sublight::PACK((this->*_getAverage)(src, true),
-                              (this->*_getAverage)(src, false)));
+    this->Send(Sublight::PACK((this->*_getAverage)(src, true, 0),
+                              (this->*_getAverage)(src, false, 0)));
 
     return src;
 }
