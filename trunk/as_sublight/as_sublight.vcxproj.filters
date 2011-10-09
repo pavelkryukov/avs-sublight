@@ -43,5 +43,8 @@
     <ClInclude Include="source\sublightUDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -15,49 +15,44 @@
 // AviSynth SDK
 #include "./avisynth.h"
 
+// Types
+#include "./types.h"
+
 class Sublight : public GenericVideoFilter {
   private:
     // Trim 4-byte number to 1-byte
-    static inline unsigned __int32 CUT(unsigned __int32 a) {
+    static inline uint32 CUT(uint32 a) {
         return a > 0xFF ? 0xFF : a;
     }
 
-    static inline unsigned __int32 CUTS(signed __int32 a) {
-        return (a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (unsigned __int32)a);
+    static inline uint32 CUTS(sint32 a) {
+        return (a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (uint32)a);
     }
 
     // Packing r, g, b into one byte
-    static inline unsigned __int32 PACKRGB(unsigned __int32 r,
-                                           unsigned __int32 g,
-                                           unsigned __int32 b) {
+    static inline uint32 PACKRGB(uint32 r, uint32 g, uint32 b) {
         return (CUT(r) + (CUT(g) << 8) + (CUT(b) << 16)) << 8;
     }
 
-    static inline unsigned __int32 PACKRGBS(signed __int32 r,
-                                            signed __int32 g,
-                                            signed __int32 b) {
+    static inline uint32 PACKRGBS(sint32 r, sint32 g, sint32 b) {
         return (CUTS(r) + (CUTS(g) << 8) + (CUTS(b) << 16)) << 8;
     }
 
     // Collecting two __int32 into one __int64
-    static inline unsigned __int64 PACK(unsigned __int32 l,
-                                        unsigned __int32 r) {
-        return (((unsigned __int64)l << 32) + r) | 0x000000EB000000A7;
+    static inline uint64 PACK(uint32 l, uint32 r) {
+        return (((uint64)l << 32) + r) | 0x000000EB000000A7;
     }
 
-    static unsigned __int32 YUVtoRGB(unsigned __int32 Y,
-                                     unsigned __int32 U,
-                                     unsigned __int32 V);
+    static uint32 YUVtoRGB(uint32 Y, uint32 U, uint32 V);
 
-    unsigned __int32 GetAverageYV12(const PVideoFrame src, bool side) const;
-    unsigned __int32 GetAverageIL(const PVideoFrame src, bool side) const;
+    uint32 GetAverageYV12(const PVideoFrame src, bool side) const;
+    uint32 GetAverageIL(const PVideoFrame src, bool side) const;
 
-    unsigned __int32(Sublight::*const _getAverage)(const PVideoFrame src,
-                                                   bool side) const;
+    uint32(Sublight::*const _getAverage)(const PVideoFrame src, bool side) const;
 
-    virtual void Send(unsigned __int64 data) const = 0;
+    virtual void Send(uint64 data) const = 0;
 
-    const unsigned __int8 _bpp;
+    const bpp_t _bpp;
   public:
     explicit Sublight(PClip child);
 
