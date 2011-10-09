@@ -20,20 +20,18 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
 /*
  * Converter form YUV to RGB
 */
-unsigned __int32 Sublight::YUVtoRGB(unsigned __int32 Y,
-                                    unsigned __int32 U,
-                                    unsigned __int32 V) {
-    const signed __int32 Yp = 298 * ((signed __int32)Y - 16) + 128;
+uint32 Sublight::YUVtoRGB(uint32 Y, uint32 U, uint32 V) {
+    const sint32 Yp = 298 * ((signed __int32)Y - 16) + 128;
 
-    const signed __int32 R = (Yp + 409 * ((signed __int32)V - 128)) >> 8;
-    const signed __int32 G = (Yp - 100 * ((signed __int32)U - 128) -
+    const sint32 R = (Yp + 409 * ((signed __int32)V - 128)) >> 8;
+    const sint32 G = (Yp - 100 * ((signed __int32)U - 128) -
                                    208 * ((signed __int32)V - 128)) >> 8;
-    const signed __int32 B = (Yp + 516 * ((signed __int32)U - 128)) >> 8;
+    const sint32 B = (Yp + 516 * ((signed __int32)U - 128)) >> 8;
 
     return Sublight::PACKRGBS(R, G, B);
 }
 
-unsigned __int32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
+uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
     const unsigned height = src->GetHeight();
@@ -42,7 +40,7 @@ unsigned __int32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const 
     // Get source pointers
     // L - is beginning of the frame
     // R - is 3/4 of the first line
-    const unsigned __int8* srcp = side ? src->GetReadPtr() :
+    const pixel* srcp = side ? src->GetReadPtr() :
                            src->GetReadPtr() + (width >> 1)  + (width >> 2);
 
     // width_w - working area width
@@ -50,10 +48,10 @@ unsigned __int32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const 
     const unsigned width_w = width >> 2;
 
     // averageSize - size of working area in pixels
-    const unsigned __int32 averageSize = width_w * height / _bpp;
+    const unsigned averageSize = width_w * height / _bpp;
 
     // average stores
-    unsigned __int32 average[4] = {0, 0, 0, 0};
+    uint32 average[4] = {0, 0, 0, 0};
 
     for (unsigned h = 0; h < height; h++) {
         for (unsigned w = 0; w < width_w;) {
@@ -82,7 +80,7 @@ unsigned __int32 Sublight::GetAverageIL(const PVideoFrame src, bool side) const 
                                                  average[3]);
 }
 
-unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
+uint32 Sublight::GetAverageYV12(const PVideoFrame src,
                                             bool side) const {
     // Get sizes
     const unsigned width  = src->GetRowSize();
@@ -96,9 +94,9 @@ unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
     // Get source pointers
     // L - is beginning of the frame
     // R - is 3/4 of the first line
-    const unsigned __int8* srcp = src->GetReadPtr();
-    const unsigned __int8* srcUp = src->GetReadPtr(PLANAR_U);
-    const unsigned __int8* srcVp = src->GetReadPtr(PLANAR_V);
+    const pixel* srcp = src->GetReadPtr();
+    const pixel* srcUp = src->GetReadPtr(PLANAR_U);
+    const pixel* srcVp = src->GetReadPtr(PLANAR_V);
     if (!side) {
         srcp  += (width >> 1) + (width >> 2);
         srcUp += (widthUV >> 1)  + (widthUV >> 2);
@@ -110,7 +108,7 @@ unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
     const unsigned width_w = width >> 2;
 
     // Average stores
-    register unsigned __int32 average = 0;
+    register uint32 average = 0;
 
     // Counting average on Y
     for (unsigned h = 0; h < height; h++) {
@@ -122,9 +120,9 @@ unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
 
     // If frame is YV12, repeat same operation on planar U and V
     const unsigned widthUV_w = widthUV >> 2;
-    const unsigned __int32 averageUVSize = widthUV_w * heightUV;
+    const unsigned averageUVSize = widthUV_w * heightUV;
 
-    register unsigned __int32 averageU = 0;
+    register uint32 averageU = 0;
 
     for (unsigned h = 0; h < heightUV; h++) {
         for (unsigned w = 0; w < widthUV_w; w++) {
@@ -133,7 +131,7 @@ unsigned __int32 Sublight::GetAverageYV12(const PVideoFrame src,
         srcUp += pitchUV;
     }
 
-    register unsigned __int32 averageV = 0;
+    register uint32 averageV = 0;
 
     for (unsigned h = 0; h < heightUV; h++) {
          for (unsigned w = 0; w < widthUV_w; w++) {
