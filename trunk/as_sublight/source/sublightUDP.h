@@ -19,7 +19,7 @@ class SublightUDP : public Sublight {
   private:
     SOCKET _sd;
     sockaddr_in dest_addr;
-    virtual void Send(unsigned __int64 data);
+    virtual void Send(unsigned __int64 data) const;
   public:
     SublightUDP(PClip child, const unsigned __int16 port, const char* const ip);
     ~SublightUDP();
