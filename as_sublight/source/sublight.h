@@ -21,17 +21,8 @@
 class Sublight : public GenericVideoFilter {
   private:
     // Trim 4-byte number to 1-byte
-    static inline uint32 CUT(uint32 a) {
-        return a > 0xFF ? 0xFF : a;
-    }
-
     static inline uint32 CUTS(sint32 a) {
         return (a > 0xFF) ? 0xFF : (a < 0x00 ? 0x00 : (uint32)a);
-    }
-
-    // Packing r, g, b into one byte
-    static inline uint32 PACKRGB(uint32 r, uint32 g, uint32 b) {
-        return (CUT(r) + (CUT(g) << 8) + (CUT(b) << 16)) << 8;
     }
 
     static inline uint32 PACKRGBS(sint32 r, sint32 g, sint32 b) {
@@ -43,14 +34,16 @@ class Sublight : public GenericVideoFilter {
         return (((uint64)l << 32) + r) | 0x000000EB000000A7;
     }
 
-    static uint32 YUVtoRGB(uint32 Y, uint32 U, uint32 V);
+    static uint32 YuvToRgb(uint32 Y, uint32 U, uint32 V);
 
-    static const unsigned _steps = 1;
+    static const unsigned STEPS = 1;
 
     uint32 GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const;
     uint32 GetAverageIL(const PVideoFrame src, bool side, unsigned step) const;
 
-    uint32(Sublight::*const _getAverage)(const PVideoFrame src, bool side, unsigned step) const;
+    uint32(Sublight::*const _getAverage)(const PVideoFrame src, 
+                                         bool side,
+                                         unsigned step) const;
 
     virtual void Send(uint64 data) const = 0;
 

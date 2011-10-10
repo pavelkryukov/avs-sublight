@@ -20,7 +20,7 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
 /*
  * Converter form YUV to RGB
 */
-uint32 Sublight::YUVtoRGB(uint32 Y, uint32 U, uint32 V) {
+uint32 Sublight::YuvToRgb(uint32 Y, uint32 U, uint32 V) {
     const sint32 Yp = 298 * ((signed __int32)Y - 16) + 128;
 
     const sint32 R = (Yp + 409 * ((signed __int32)V - 128)) >> 8;
@@ -33,9 +33,12 @@ uint32 Sublight::YUVtoRGB(uint32 Y, uint32 U, uint32 V) {
 
 uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
-    const unsigned width  = src->GetRowSize();
-    const unsigned height = src->GetHeight() / this->_steps;
-    const unsigned pitch  = src->GetPitch();
+    const unsigned width       = src->GetRowSize();
+    const unsigned width_w     = width >> 2;
+    const unsigned width_w_bpp = width_w / _bpp;
+    const unsigned height      = src->GetHeight() / Sublight::STEPS;
+    const unsigned line        = src->GetPitch() - width_w;
+    const unsigned averageSize = width_w_bpp * height;
 
     // Get source pointers
     // L - is beginning of the frame
@@ -46,26 +49,19 @@ uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side, unsigned step) c
     // Step offset
     srcp += height * step;
 
-    // width_w - working area width
-    // we will count average on working area
-    const unsigned width_w = width >> 2;
-
-    // averageSize - size of working area in pixels
-    const unsigned averageSize = width_w * height / _bpp;
-
     // average stores
     uint32 average[4] = {0, 0, 0, 0};
 
     for (unsigned h = 0; h < height; h++) {
-        for (unsigned w = 0; w < width_w;) {
-             average[0] += *(srcp + w++);
-             average[1] += *(srcp + w++);
-             average[2] += *(srcp + w++);
+        for (unsigned w = 0; w < width_w_bpp; w++) {
+             average[0] += *(srcp++);
+             average[1] += *(srcp++);
+             average[2] += *(srcp++);
              if (_bpp == 4) {
-                 average[3] += *(srcp + w++);
+                 average[3] += *(srcp++);
              }
          }
-         srcp += pitch;
+         srcp += line;
     }
 
     average[0] /= averageSize;
@@ -74,10 +70,11 @@ uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side, unsigned step) c
     average[3] /= averageSize;
 
     // If format is RGB, collect colors into int32
-    return this->vi.IsRGB() ? Sublight::PACKRGB(average[2],
-                                                average[1],
-                                                average[0]) :
-                              Sublight::YUVtoRGB((average[0] >> 1) +
+    return this->vi.IsRGB() ? (average[2] +
+                              (average[1] << 8) +
+                              (average[0] << 16)) << 8 :
+    // Else, if YUY2, convert to RGB
+                              Sublight::YuvToRgb((average[0] >> 1) +
                                                  (average[2] >> 1),
                                                  average[1],
                                                  average[3]);
@@ -85,13 +82,15 @@ uint32 Sublight::GetAverageIL(const PVideoFrame src, bool side, unsigned step) c
 
 uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
-    const unsigned width  = src->GetRowSize();
-    const unsigned height = src->GetHeight() / this->_steps;
-    const unsigned pitch  = src->GetPitch();
+    const unsigned width   = src->GetRowSize();
+    const unsigned width_w = width >> 2;
+    const unsigned height  = src->GetHeight() / Sublight::STEPS;
+    const unsigned line    = src->GetPitch() - width_w;
 
-    const unsigned widthUV  = src->GetRowSize(PLANAR_U);
-    const unsigned pitchUV  = src->GetPitch(PLANAR_U);
-    const unsigned heightUV = src->GetHeight(PLANAR_U) / this->_steps;
+    const unsigned widthUV   = src->GetRowSize(PLANAR_U);
+    const unsigned widthUV_w = widthUV >> 2;
+    const unsigned heightUV  = src->GetHeight(PLANAR_U) / Sublight::STEPS;
+    const unsigned lineUV    = src->GetPitch(PLANAR_U) - widthUV_w;
 
     // Get source pointers
     // L - is beginning of the frame
@@ -100,8 +99,8 @@ uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step)
     const pixel* srcUp = src->GetReadPtr(PLANAR_U);
     const pixel* srcVp = src->GetReadPtr(PLANAR_V);
     if (!side) {
-        srcp  += (width >> 1) + (width >> 2);
-        srcUp += (widthUV >> 1)  + (widthUV >> 2);
+        srcp  += width_w   + (width_w << 1);
+        srcUp += widthUV_w + (widthUV_w << 1);
         srcVp += (widthUV >> 1)  + (widthUV >> 2);
     }
 
@@ -110,45 +109,39 @@ uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step)
     srcUp += heightUV * step;
     srcVp += heightUV * step;
 
-    // width_w - working area width
-    // we will count average on working area
-    const unsigned width_w = width >> 2;
-
     // Average stores
     register uint32 average = 0;
 
     // Counting average on Y
     for (unsigned h = 0; h < height; h++) {
         for (unsigned w = 0; w < width_w; w++) {
-            average += *(srcp + w);
+            average += *(srcp++);
         }
-        srcp += pitch;
+        srcp += line;
     }
-
-    // If frame is YV12, repeat same operation on planar U and V
-    const unsigned widthUV_w = widthUV >> 2;
-    const unsigned averageUVSize = widthUV_w * heightUV;
 
     register uint32 averageU = 0;
 
     for (unsigned h = 0; h < heightUV; h++) {
         for (unsigned w = 0; w < widthUV_w; w++) {
-             averageU += *(srcUp + w);
+             averageU += *(srcUp++);
         }
-        srcUp += pitchUV;
+        srcUp += lineUV;
     }
 
     register uint32 averageV = 0;
 
     for (unsigned h = 0; h < heightUV; h++) {
          for (unsigned w = 0; w < widthUV_w; w++) {
-             averageV += *(srcVp + w);
+             averageV += *(srcVp++);
         }
-        srcVp += pitchUV;
+        srcVp += lineUV;
     }
 
+    const unsigned averageUVSize = widthUV_w * heightUV;
+
     // Make output bytes
-    return Sublight::YUVtoRGB(average / (width_w * height),
+    return Sublight::YuvToRgb(average / (width_w * height),
                               averageU / averageUVSize,
                               averageV / averageUVSize);
 }
