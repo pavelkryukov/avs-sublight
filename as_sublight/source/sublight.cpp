@@ -11,13 +11,13 @@
  * Constructor
  */
 Sublight::Sublight(PClip child) : GenericVideoFilter(child),
-                                  _getAverage(vi.IsYV12() ?
-                                                &Sublight::GetAverageYV12 :
-                                              vi.IsYUY2() ?
-                                                &Sublight::GetAverageYUY2 :
-                                              vi.IsRGB24() ?
-                                                &Sublight::GetAverageRGB24 :
-                                                &Sublight::GetAverageRGB32) {
+                                  _getAv(vi.IsYV12() ?
+                                             &Sublight::GetAvYV12 :
+                                         vi.IsYUY2() ?
+                                             &Sublight::GetAvYUY2 :
+                                         vi.IsRGB24() ?
+                                             &Sublight::GetAvRGB24 :
+                                             &Sublight::GetAvRGB32) {
 
 }
 
@@ -35,7 +35,7 @@ uint32 Sublight::YuvToRgb(uint32 Y, uint32 U, uint32 V) {
     return Sublight::PACKRGBS(R, G, B);
 }
 
-uint32 Sublight::GetAverageRGB24(const PVideoFrame src, bool side, unsigned step) const {
+uint32 Sublight::GetAvRGB24(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width       = src->GetRowSize();
     const unsigned width_w     = width >> 2;
@@ -75,7 +75,7 @@ uint32 Sublight::GetAverageRGB24(const PVideoFrame src, bool side, unsigned step
     return (B + (G << 8) + (R << 16)) << 8;
 }
 
-uint32 Sublight::GetAverageRGB32(const PVideoFrame src, bool side, unsigned step) const {
+uint32 Sublight::GetAvRGB32(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width       = src->GetRowSize();
     const unsigned width_w     = width >> 2;
@@ -116,7 +116,7 @@ uint32 Sublight::GetAverageRGB32(const PVideoFrame src, bool side, unsigned step
     return (B + (G << 8) + (R << 16)) << 8;
 }
 
-uint32 Sublight::GetAverageYUY2(const PVideoFrame src, bool side, unsigned step) const {
+uint32 Sublight::GetAvYUY2(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width       = src->GetRowSize();
     const unsigned width_w     = width >> 2;
@@ -157,7 +157,7 @@ uint32 Sublight::GetAverageYUY2(const PVideoFrame src, bool side, unsigned step)
     return Sublight::YuvToRgb(Y, U, V);
 }
 
-uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const {
+uint32 Sublight::GetAvYV12(const PVideoFrame src, bool side, unsigned step) const {
     // Get sizes
     const unsigned width   = src->GetRowSize();
     const unsigned width_w = width >> 2;
@@ -223,8 +223,8 @@ uint32 Sublight::GetAverageYV12(const PVideoFrame src, bool side, unsigned step)
 PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     const PVideoFrame src = child->GetFrame(n, env);
 
-    this->Send(Sublight::PACK((this->*_getAverage)(src, true, 0),
-                              (this->*_getAverage)(src, false, 0)));
+    this->Send(Sublight::PACK((this->*_getAv)(src, true, 0),
+                              (this->*_getAv)(src, false, 0)));
 
     return src;
 }

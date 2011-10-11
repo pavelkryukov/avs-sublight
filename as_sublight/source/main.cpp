@@ -22,7 +22,7 @@ AVSValue __cdecl Create_Sublight(AVSValue args,
                                  IScriptEnvironment* env) {
     return new SublightUDP(args[0].AsClip(),
                            args[1].AsInt(),
-                           args[2].AsString());
+                           args[2].AsString("255.255.255.255"));
 }
 
 /*
