@@ -39,15 +39,15 @@ class Sublight : public GenericVideoFilter {
     static const unsigned STEPS = 1;
 
     uint32 GetAverageYV12(const PVideoFrame src, bool side, unsigned step) const;
-    uint32 GetAverageIL(const PVideoFrame src, bool side, unsigned step) const;
+    uint32 GetAverageRGB24(const PVideoFrame src, bool side, unsigned step) const;
+    uint32 GetAverageRGB32(const PVideoFrame src, bool side, unsigned step) const;
+    uint32 GetAverageYUY2(const PVideoFrame src, bool side, unsigned step) const;
 
     uint32(Sublight::*const _getAverage)(const PVideoFrame src, 
                                          bool side,
                                          unsigned step) const;
 
     virtual void Send(uint64 data) const = 0;
-
-    const bpp_t _bpp;
   public:
     explicit Sublight(PClip child);
 
