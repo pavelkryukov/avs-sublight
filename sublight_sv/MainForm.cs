@@ -77,7 +77,8 @@ namespace sublight_sv
             var dirName = Path.GetDirectoryName(Application.ExecutablePath);
             var scriptPath = dirName + @"\script.avs";
 
-            var arguments = playerText.Text.Split(new string[] {@".exe"}, StringSplitOptions.None);
+            var arguments = playerText.Text.Replace("\"", "").
+                Split(new [] {@".exe"}, StringSplitOptions.None);
 
             var file = new StreamWriter(scriptPath);
 
@@ -95,7 +96,7 @@ namespace sublight_sv
                               StartInfo =
                                   {
                                       FileName = arguments[0] + @".exe",
-                                      Arguments = ((arguments.Length > 1) ? arguments[1] : "") + @" " + scriptPath
+                                      Arguments = ((arguments.Length > 1) ? arguments[1] : "") + " \"" + scriptPath + "\""
                                   }
                           };
 
