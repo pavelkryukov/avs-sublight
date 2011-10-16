@@ -53,6 +53,8 @@ class Sublight : public GenericVideoFilter {
 
     // DO NOT make this method 'const'
     PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+	
+    virtual __stdcall ~Sublight() {}
 };
 
 #endif  // AS_SUBLIGHT_SOURCE_SUBLIGHT_H_

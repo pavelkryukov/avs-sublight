@@ -6,7 +6,9 @@
  * Copyright 2011 Pavel Kryukov (C)
 */
 
+#if _MSC_VER
 #pragma comment(lib, "Ws2_32.lib")
+#endif
 
 #include "./sublightUDP.h"
 
