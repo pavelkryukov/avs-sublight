@@ -413,7 +413,7 @@ public:
 
   BYTE* GetWritePtr() const {
     if (vfb->GetRefcount()>1) {
-      _ASSERT(FALSE);
+      _ASSERTE(FALSE);
       //throw AvisynthError("Internal Error - refcount was more than one!");
     }
     return IsWritable() ? (vfb->GetWritePtr() + offset) : 0;
@@ -422,7 +422,7 @@ public:
   BYTE* GetWritePtr(int plane) const {
     if (plane==PLANAR_Y) {
       if (vfb->GetRefcount()>1) {
-        _ASSERT(FALSE);
+        _ASSERTE(FALSE);
 //        throw AvisynthError("Internal Error - refcount was more than one!");
       }
       return IsWritable() ? vfb->GetWritePtr() + GetOffset(plane) : 0;
@@ -618,6 +618,7 @@ public:
   const VideoInfo& __stdcall GetVideoInfo() { return vi; }
   bool __stdcall GetParity(int n) { return child->GetParity(n); }
   void __stdcall SetCacheHints(int cachehints,int frame_range) { } ;  // We do not pass cache requests upwards, only to the next filter.
+  virtual __stdcall ~GenericVideoFilter() {}
 };
 
 
@@ -632,6 +633,7 @@ public:
   AlignPlanar(PClip _clip);
   static PClip Create(PClip clip);
   PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+  virtual __stdcall ~AlignPlanar() {}
 };
 
 
@@ -642,6 +644,7 @@ public:
   FillBorder(PClip _clip);
   static PClip Create(PClip clip);
   PVideoFrame __stdcall GetFrame(int n, IScriptEnvironment* env);
+  virtual __stdcall ~FillBorder() {}
 };
 
 
@@ -663,7 +666,7 @@ public:
   static AVSValue __cdecl Create_16bit(AVSValue args, void*, IScriptEnvironment*);
   static AVSValue __cdecl Create_8bit (AVSValue args, void*, IScriptEnvironment*);
   static AVSValue __cdecl Create_Any  (AVSValue args, void*, IScriptEnvironment*);
-  virtual ~ConvertAudio();
+  virtual _stdcall ~ConvertAudio();
 
 private:
   void convertToFloat(char* inbuf, float* outbuf, char sample_type, int count);

@@ -25,7 +25,7 @@ class SublightUDP : public Sublight {
     virtual void Send(uint64 data) const;
   public:
     SublightUDP(PClip child, const unsigned __int16 port, const char* const ip);
-    ~SublightUDP();
+    virtual _stdcall ~SublightUDP();
 };
 
 #endif  // AS_SUBLIGHT_SOURCE_SUBLIGHTUDP_H_
