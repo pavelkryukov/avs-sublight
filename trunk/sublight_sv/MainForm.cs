@@ -16,7 +16,7 @@ namespace sublight_sv
         public MainForm()
         {
             InitializeComponent();
-            playerText.Text = @".\..\..\utils\mpc-hc.exe";
+            playerText.Text = RegistryReader.GetName();
         }
 
         private void ChoosePlayer(object sender, EventArgs e)
@@ -71,7 +71,11 @@ namespace sublight_sv
                }
             }
             var file = new StreamWriter(ScriptName);
-            file.WriteLine(@"LoadPlugin("".\..\bin\Release\as_sublight.dll"")");
+
+            var appPath = Path.GetDirectoryName(Application.ExecutablePath);
+
+            file.WriteLine(String.Format(@"LoadPlugin(""{0}\as_sublight.dll"")", 
+                                         appPath));
             file.WriteLine(String.Format(@"return Sublight(DirectShowSource(""{0}""), PORT={1}, IP=""{2}"")",
                                          videoText.Text,
                                          portText.Text,
