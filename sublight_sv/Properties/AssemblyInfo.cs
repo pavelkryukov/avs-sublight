@@ -10,7 +10,7 @@ using System.Resources;
 [assembly: AssemblyDescription("AVS-Sublight starter application")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("414-Systems")]
-[assembly: AssemblyProduct("Sublight Systems")]
+[assembly: AssemblyProduct("AVS-Sublight")]
 [assembly: AssemblyCopyright("Copyright © 414-Systems 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
