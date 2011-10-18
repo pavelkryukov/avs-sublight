@@ -29,14 +29,7 @@ class Sublight : public GenericVideoFilter {
         return (CUTS(r) + (CUTS(g) << 8) + (CUTS(b) << 16)) << 8;
     }
 
-    // Collecting two __int32 into one __int64
-    static inline uint64 PACK(uint32 l, uint32 r) {
-        return (((uint64)l << 32) + r) | 0x000000EB000000A7;
-    }
-
     static uint32 YuvToRgb(uint32 Y, uint32 U, uint32 V);
-
-    static const unsigned STEPS = 1;
 
     uint32(Sublight::*const _getAv)(const PVideoFrame src, 
                                          bool side,
@@ -47,7 +40,7 @@ class Sublight : public GenericVideoFilter {
     uint32 GetAvYUY2 (const PVideoFrame src, bool side, unsigned step) const;
     uint32 GetAvYV12 (const PVideoFrame src, bool side, unsigned step) const;
 
-    virtual void Send(uint64 data) const = 0;
+    virtual void Send(uint32 data) const = 0;
   public:
     explicit Sublight(PClip child);
 
