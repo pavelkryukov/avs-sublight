@@ -43,13 +43,12 @@ namespace sublight_cl
             _lamp = null;
         }
 
-        /*private void StopButtonClick(object sender, EventArgs e)
+        private void OnKill(object sender, FormClosedEventArgs e)
         {
-            if (_lamp == null) return;
-            _lamp.Close();
+            _lamp.IsOn = false;
             _lamp.KillSocket();
-            _lamp = null;
-        }*/
-
+            _lamp.Close();
+            Application.Exit();
+        }
     }
 }

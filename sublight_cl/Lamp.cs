@@ -11,12 +11,14 @@ namespace sublight_cl
         private readonly Label _sideLabel = new Label();
         private readonly PictureBox _closeButton = new PictureBox();
 
+        private readonly PictureBox[] _fields = new PictureBox[4];
+
         private readonly Side _side;
 
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private EndPoint _remote;
 
-        private bool _isOn;
+        public bool IsOn;
         
         private const int Timeout = 100;
 
@@ -28,7 +30,7 @@ namespace sublight_cl
             _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
             _mysocket.ReceiveTimeout = Timeout;
 
-            _isOn = true;
+            IsOn = true;
 
             _remote = new IPEndPoint(IPAddress.Any,0);
 
@@ -37,25 +39,41 @@ namespace sublight_cl
             Top = 0;
             Left = 0;
             Width = Screen.PrimaryScreen.Bounds.Width;
-            Height = Screen.PrimaryScreen.Bounds.Height; 
-            Icon = Properties.Resources.Monitor;
+            Height = Screen.PrimaryScreen.Bounds.Height;
 
+            for (var i = 0; i < 4; i++ )
+            {
+                _fields[i] = new PictureBox
+                                 {
+                                     Top = i * Screen.PrimaryScreen.Bounds.Height/4,
+                                     Left = 0,
+                                     Width = Screen.PrimaryScreen.Bounds.Width,
+                                     Height = Screen.PrimaryScreen.Bounds.Height/4,
+                                     TabIndex = i
+                                 };
+                Controls.Add(_fields[i]);
+            }
+
+            Icon = Properties.Resources.Monitor;
 
             _sideLabel.AutoSize = true;
             _sideLabel.Location = new Point(100, 100);
             _sideLabel.Name = "portLabel";
             _sideLabel.Size = new Size(26, 13);
             _sideLabel.Font = new Font("Microsoft Sans Serif", 36F, FontStyle.Regular);
-            _sideLabel.TabIndex = 1;
+            _sideLabel.TabIndex = 5;
             _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
+            _sideLabel.BackColor = Color.Transparent;
             Controls.Add(_sideLabel);
 
             _closeButton.Size = new Size(64, 64);
             _closeButton.Location = new Point(Width - _closeButton.Width, 0);
             _closeButton.Image = Properties.Resources.cross;
+            _closeButton.TabIndex = 6;
+            _closeButton.BackColor = Color.Transparent;
             _closeButton.Click += ((sender, e) =>
                                        {
-                                           _isOn = false;
+                                           IsOn = false;
                                            Application.Exit();
                                        });
             Controls.Add(_closeButton);
@@ -68,6 +86,9 @@ namespace sublight_cl
             Text = @"Lamp";
             
             ResumeLayout(false);
+        
+            _closeButton.BringToFront();
+            _sideLabel.BringToFront();
         }
 
         public void KillSocket()
@@ -82,32 +103,16 @@ namespace sublight_cl
 
         public void Start()
         {
-            uint r, g, b;
-            switch (_side)
-            {
-                case Side.Left:
-                    r = 5;
-                    g = 6;
-                    b = 7;
-                    break;
-                case Side.Right:
-                    r = 1;
-                    g = 2;
-                    b = 3;
-                    break;
-                default:
-                    throw new Exception("Invalid side has been selected.");
-            }
             while(true)
             {
-                var data = new byte[8];
+                var data = new byte[4];
                 try
                 {
-                    _mysocket.ReceiveFrom(data, 8, SocketFlags.None, ref _remote);
+                    _mysocket.ReceiveFrom(data, 4, SocketFlags.None, ref _remote);
                 }
                 catch (SocketException)
                 {
-                    if (!_isOn)
+                    if (!IsOn)
                     {
                         break;
                     }
@@ -115,19 +120,42 @@ namespace sublight_cl
                     continue;
                 }
 
-                if ((data[0] == 0xA7) && (data[4] == 0xEB))
+                switch (_side)
                 {
-                    BackColor = Color.FromArgb(data[r], data[g], data[b]);
+                    case Side.Left:
+                        if (data[0] == 0x3C)
+                        {
+                            if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
+                            {
+                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("liok"), 4, SocketFlags.None,
+                                                 _remote);
+                            }
+                        }
+                        else if ((data[0] & 0xFC) == 0xFC)
+                        {
+                            _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+                        }
+                        break;
+
+                    case Side.Right:
+                        if (data[0] == 0x30)
+                        {
+                            if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
+                            {
+                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("riok"), 4, SocketFlags.None,
+                                                 _remote);
+                            }
+                        }
+                        else if ((data[0] & 0xFC) == 0xF0)
+                        {
+                            _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+                        }
+                        break;
+
+                    default:
+                        break;
                 }
-                else if (System.Text.Encoding.ASCII.GetString(data).Equals("islok\0\0\0") && (_side == Side.Left))
-                {
-                    _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("lisok"), 5, SocketFlags.None, _remote);
-                }
-                else if (System.Text.Encoding.ASCII.GetString(data).Equals("isrok\0\0\0") && (_side == Side.Right))
-                {
-                    _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("risok"), 5, SocketFlags.None, _remote);
-                }
-                
+
                 Application.DoEvents();
             }
         }

@@ -100,7 +100,6 @@
             // 
             // AppForm
             // 
-            this.Icon = sublight_cl.Properties.Resources.Monitor;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(300, 141);
@@ -109,9 +108,11 @@
             this.Controls.Add(this.portLabel);
             this.Controls.Add(this.portBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = global::sublight_cl.Properties.Resources.Monitor;
             this.MaximizeBox = false;
             this.Name = "AppForm";
             this.Text = "Sublight Client";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnKill);
             this.sideBox.ResumeLayout(false);
             this.sideBox.PerformLayout();
             this.ResumeLayout(false);

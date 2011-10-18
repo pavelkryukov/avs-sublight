@@ -7,9 +7,9 @@ namespace sublight_sv
 {
     public class ChkDialog : Form
     {
-        private readonly Socket _mysocket;
-        private const string ChkL = "islok";
-        private const string ChkR = "isrok";
+        private readonly Socket _mysocket; 
+        private readonly byte[] _chkL = { 0x3C, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkR = { 0x30, 0xFF, 0xFF, 0xFF };
         private readonly IPEndPoint _sender;
 
         private readonly ProgressBar _progressBar;
@@ -96,9 +96,7 @@ namespace sublight_sv
                 StartTimer();
                 Application.DoEvents();
 
-                var sLdata = Encoding.ASCII.GetBytes(ChkL);
-
-                _mysocket.SendTo(sLdata, sLdata.Length, SocketFlags.None, _sender);
+                _mysocket.SendTo(_chkL, 4, SocketFlags.None, _sender);
                 var remote = (EndPoint)_sender;
                 while (_i <= 3)//Wait for ansver 3 timer ticks
                 {
@@ -111,7 +109,7 @@ namespace sublight_sv
                     }
                 }
 
-                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("lisok"))
+                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("liok"))
                 {
                     _parent.Lchkd = true;
                     _progressBar.Value = _progressBar.Maximum / 2;
@@ -129,9 +127,7 @@ namespace sublight_sv
                 StartTimer();
                 Application.DoEvents();
 
-                var sRdata = Encoding.ASCII.GetBytes(ChkR);
-
-                _mysocket.SendTo(sRdata, sRdata.Length, SocketFlags.None, _sender);
+                _mysocket.SendTo(_chkR, 4, SocketFlags.None, _sender);
                 var remote = (EndPoint)_sender;
                 while (_i <= 3)//Wait for ansver 2 timer ticks
                 {
@@ -144,7 +140,7 @@ namespace sublight_sv
                     }
                 }
 
-                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("risok"))
+                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("riok"))
                 {
                     _parent.Rchkd = true;
                     _progressBar.Value = _progressBar.Maximum;
