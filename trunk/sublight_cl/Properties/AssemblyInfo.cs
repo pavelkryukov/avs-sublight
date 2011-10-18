@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("sublight_cl_net")]
-[assembly: AssemblyDescription("AVS-sublight system client application")]
+[assembly: AssemblyTitle("Sublight UDP Receiver")]
+[assembly: AssemblyDescription("AVS-sublight system receiver application for UDP")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("414-systems")]
-[assembly: AssemblyProduct("sublight_cl_net")]
+[assembly: AssemblyProduct("AVS-Sublight")]
 [assembly: AssemblyCopyright("414-systems © 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

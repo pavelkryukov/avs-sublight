@@ -111,7 +111,7 @@
             this.Icon = global::sublight_cl.Properties.Resources.Monitor;
             this.MaximizeBox = false;
             this.Name = "AppForm";
-            this.Text = "Sublight Client";
+            this.Text = "Sublight UDP Receiver";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnKill);
             this.sideBox.ResumeLayout(false);
             this.sideBox.PerformLayout();
