@@ -45,6 +45,7 @@ namespace sublight_cl
 
         private void OnKill(object sender, FormClosedEventArgs e)
         {
+            if (_lamp == null) return;
             _lamp.IsOn = false;
             _lamp.KillSocket();
             _lamp.Close();
