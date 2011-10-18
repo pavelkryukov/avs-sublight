@@ -45,7 +45,7 @@ namespace sublight_cl
             {
                 _fields[i] = new PictureBox
                                  {
-                                     Top = i * Screen.PrimaryScreen.Bounds.Height/4,
+                                     Top = i*Screen.PrimaryScreen.Bounds.Height/4,
                                      Left = 0,
                                      Width = Screen.PrimaryScreen.Bounds.Width,
                                      Height = Screen.PrimaryScreen.Bounds.Height/4,
@@ -57,20 +57,18 @@ namespace sublight_cl
             Icon = Properties.Resources.Monitor;
 
             _sideLabel.AutoSize = true;
-            _sideLabel.Location = new Point(100, 100);
+            _sideLabel.Location = new Point(Screen.PrimaryScreen.Bounds.Height/8, 100);
             _sideLabel.Name = "portLabel";
             _sideLabel.Size = new Size(26, 13);
             _sideLabel.Font = new Font("Microsoft Sans Serif", 36F, FontStyle.Regular);
             _sideLabel.TabIndex = 5;
             _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
-            _sideLabel.BackColor = Color.Transparent;
             Controls.Add(_sideLabel);
 
             _closeButton.Size = new Size(64, 64);
             _closeButton.Location = new Point(Width - _closeButton.Width, 0);
             _closeButton.Image = Properties.Resources.cross;
             _closeButton.TabIndex = 6;
-            _closeButton.BackColor = Color.Transparent;
             _closeButton.Click += ((sender, e) =>
                                        {
                                            IsOn = false;
@@ -156,6 +154,8 @@ namespace sublight_cl
                         break;
                 }
 
+                _closeButton.BackColor = _fields[0].BackColor;
+                _sideLabel.BackColor = _fields[0].BackColor;
                 Application.DoEvents();
             }
         }
