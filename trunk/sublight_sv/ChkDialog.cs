@@ -8,8 +8,13 @@ namespace sublight_sv
     public class ChkDialog : Form
     {
         private readonly Socket _mysocket; 
+
         private readonly byte[] _chkL = { 0x30, 0xFF, 0xFF, 0xFF };
         private readonly byte[] _chkR = { 0x3C, 0xFF, 0xFF, 0xFF };
+
+        private readonly byte[] _chkLAns = { 0xC0, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkRAns = { 0xCC, 0xFF, 0xFF, 0xFF };
+
         private readonly IPEndPoint _sender;
 
         private readonly ProgressBar _progressBar;
@@ -84,7 +89,7 @@ namespace sublight_sv
 
         public void StartSending()
         {
-            var rdata = new byte[5];
+            var rdata = new byte[4];
             var recv = 0;
             const int steps = 2;
 
@@ -102,14 +107,12 @@ namespace sublight_sv
                 {
                     Application.DoEvents();
                     recv = _mysocket.Available;
-                    if (recv > 0)
-                    {
-                        recv = _mysocket.ReceiveFrom(rdata, ref remote);
-                        break;
-                    }
+                    if (recv <= 0) continue;
+                    recv = _mysocket.ReceiveFrom(rdata, ref remote);
+                    break;
                 }
 
-                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("liok"))
+                if (recv == 4 && rdata[0] == _chkLAns[0])
                 {
                     _parent.Lchkd = true;
                     _progressBar.Value = _progressBar.Maximum / 2;
@@ -133,14 +136,12 @@ namespace sublight_sv
                 {
                     Application.DoEvents();
                     recv = _mysocket.Available;
-                    if (recv > 0)
-                    {
-                        recv = _mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
-                        break;
-                    }
+                    if (recv <= 0) continue;
+                    recv = _mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
+                    break;
                 }
 
-                if (Encoding.ASCII.GetString(rdata, 0, recv).Equals("riok"))
+                if (recv == 4 && rdata[0] == _chkRAns[0])
                 {
                     _parent.Rchkd = true;
                     _progressBar.Value = _progressBar.Maximum;

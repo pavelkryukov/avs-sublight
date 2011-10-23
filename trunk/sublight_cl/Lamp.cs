@@ -11,6 +11,9 @@ namespace sublight_cl
         private readonly Label _sideLabel = new Label();
         private readonly PictureBox _closeButton = new PictureBox();
 
+        private readonly byte[] _chkL = { 0xC0, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkR = { 0xCC, 0xFF, 0xFF, 0xFF };
+
         private readonly PictureBox[] _fields = new PictureBox[4];
 
         private readonly Side _side;
@@ -125,8 +128,7 @@ namespace sublight_cl
                         {
                             if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
                             {
-                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("riok"), 4, SocketFlags.None,
-                                                 _remote);
+                                _mysocket.SendTo(_chkR, 4, SocketFlags.None, _remote);
                             }
                         }
                         else if ((data[0] & 0xFC) == 0xFC)
@@ -140,8 +142,7 @@ namespace sublight_cl
                         {
                             if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
                             {
-                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("liok"), 4, SocketFlags.None,
-                                                 _remote);
+                                _mysocket.SendTo(_chkL, 4, SocketFlags.None, _remote);
                             }
                         }
                         else if ((data[0] & 0xFC) == 0xF0)
