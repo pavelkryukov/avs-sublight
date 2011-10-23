@@ -25,7 +25,8 @@ SublightUDP::SublightUDP(PClip child,
     dest_addr.sin_addr.s_addr = inet_addr(ip);
 
     BOOL bOptVal = TRUE;
-    setsockopt(_sd, SOL_SOCKET, SO_BROADCAST, (char*)&bOptVal, sizeof(BOOL));
+    setsockopt(_sd, SOL_SOCKET, SO_BROADCAST,
+            reinterpret_cast<char*>(&bOptVal), sizeof(BOOL));
 }
 
 SublightUDP::~SublightUDP() {
@@ -33,6 +34,6 @@ SublightUDP::~SublightUDP() {
 }
 
 void SublightUDP::Send(uint32 data) const {
-    sendto(_sd, (char*)&data,  sizeof(data), 0,
-        (sockaddr*)&dest_addr, sizeof(dest_addr));
+    sendto(_sd, reinterpret_cast<char*>(&data),  sizeof(data), 0,
+        reinterpret_cast<const sockaddr*>(&dest_addr), sizeof(dest_addr));
 }

@@ -23,9 +23,7 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
                                              &Sublight::GetAvYUY2 :
                                          vi.IsRGB24() ?
                                              &Sublight::GetAvRGB24 :
-                                             &Sublight::GetAvRGB32) {
-
-}
+                                             &Sublight::GetAvRGB32) {}
 
 /*
  * Converter form YUV to RGB
@@ -48,7 +46,7 @@ uint32 Sublight::GetAvRGB24(const PVideoFrame src, coord_t xy) const {
     srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
     // average stores
-    register uint32 B = 0; // Yes I'm a believer
+    register uint32 B = 0;  // Yes I'm a believer
     register uint32 G = 0;
     register uint32 R = 0;
 
@@ -129,7 +127,7 @@ uint32 Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
 
 uint32 Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
     register const pixel* srcp = src->GetReadPtr();
- 
+
     // Step offset
     srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
@@ -146,10 +144,12 @@ uint32 Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
 
     register const pixel* srcUp = src->GetReadPtr(PLANAR_U);
     register const pixel* srcVp = src->GetReadPtr(PLANAR_V);
- 
+
     // Step offset
-    srcUp += src->GetPitch(PLANAR_U) * heightUV * (xy & 3) + widthUV * (xy >> 2);
-    srcVp += src->GetPitch(PLANAR_V) * heightUV * (xy & 3) + widthUV * (xy >> 2);
+    unsigned offsetUV = src->GetPitch(PLANAR_U) * heightUV * (xy & 3)
+                        + widthUV * (xy >> 2);
+    srcUp += offsetUV;
+    srcVp += offsetUV;
 
     register uint32 U = 0;
     register uint32 V = 0;
@@ -162,10 +162,12 @@ uint32 Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
         srcUp += lineUV;
     }
 
+    Y /= averageSize;
+    U /= averageSizeUV;
+    V /= averageSizeUV;
+
     // Make output bytes
-    return Sublight::YuvToRgb(Y / averageSize,
-                              U / averageSizeUV,
-                              V / averageSizeUV) + SIGNATURE + xy;
+    return Sublight::YuvToRgb(Y, U, V) + SIGNATURE + xy;
 }
 
 
@@ -200,10 +202,13 @@ void Sublight::SetSizesYV12(const PVideoFrame src) {
 }
 
 
-const coord_t Sublight::frames[] = {0x0, 0x4, 0x8, 0xC, 
-                                    0x1,           0xD, 
-                                    0x2,           0xE, 
+const coord_t Sublight::frames[] = {0x0, 0x4, 0x8, 0xC,
+                                    0x1,           0xD,
+                                    0x2,           0xE,
                                     0x3,           0xF};
+
+const unsigned Sublight::framesAmount = sizeof(Sublight::frames) /
+                                        sizeof(Sublight::frames[0]);
 
 /*
  * Frame generator
@@ -213,9 +218,7 @@ PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
 
     (this->*_setSizes)(src);
 
-    const unsigned amount = sizeof(frames) / sizeof(frames[0]);
-
-    for (unsigned i = 0; i < amount; ++i) {
+    for (unsigned i = 0; i < framesAmount; ++i) {
         this->Send((this->*_getAv)(src, frames[i]));
     }
 

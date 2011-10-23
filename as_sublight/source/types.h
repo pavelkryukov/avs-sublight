@@ -15,3 +15,4 @@ typedef unsigned __int32 uint32;
 typedef signed __int32 sint32;
 
 #endif  // AS_SUBLIGHT_SOURCE_TYPES_H_
+
