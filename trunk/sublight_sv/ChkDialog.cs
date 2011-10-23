@@ -8,8 +8,8 @@ namespace sublight_sv
     public class ChkDialog : Form
     {
         private readonly Socket _mysocket; 
-        private readonly byte[] _chkL = { 0x3C, 0xFF, 0xFF, 0xFF };
-        private readonly byte[] _chkR = { 0x30, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkL = { 0x30, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkR = { 0x3C, 0xFF, 0xFF, 0xFF };
         private readonly IPEndPoint _sender;
 
         private readonly ProgressBar _progressBar;
