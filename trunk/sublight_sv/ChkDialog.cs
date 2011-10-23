@@ -1,7 +1,7 @@
-﻿using System.Text;
-using System.Net;
+﻿using System.Net;
 using System.Windows.Forms;
 using System.Net.Sockets;
+using System.Linq;
 
 namespace sublight_sv
 {
@@ -35,7 +35,6 @@ namespace sublight_sv
 
             _sender = new IPEndPoint(IPAddress.Broadcast, port);
 
-    //        components = new System.ComponentModel.Container();
             _progressBar = new ProgressBar();
             _timer = new Timer();
             _label = new Label();
@@ -90,7 +89,7 @@ namespace sublight_sv
         public void StartSending()
         {
             var rdata = new byte[4];
-            var recv = 0;
+            int recv;
             const int steps = 2;
 
             _parent.Lchkd = false;
@@ -108,11 +107,11 @@ namespace sublight_sv
                     Application.DoEvents();
                     recv = _mysocket.Available;
                     if (recv <= 0) continue;
-                    recv = _mysocket.ReceiveFrom(rdata, ref remote);
+                    _mysocket.ReceiveFrom(rdata, ref remote);
                     break;
                 }
 
-                if (recv == 4 && rdata[0] == _chkLAns[0])
+                if (rdata.SequenceEqual(_chkLAns))
                 {
                     _parent.Lchkd = true;
                     _progressBar.Value = _progressBar.Maximum / 2;
@@ -137,11 +136,11 @@ namespace sublight_sv
                     Application.DoEvents();
                     recv = _mysocket.Available;
                     if (recv <= 0) continue;
-                    recv = _mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
+                    _mysocket.ReceiveFrom(rdata, rdata.Length, SocketFlags.None, ref remote);
                     break;
                 }
 
-                if (recv == 4 && rdata[0] == _chkRAns[0])
+                if (rdata.SequenceEqual(_chkRAns))
                 {
                     _parent.Rchkd = true;
                     _progressBar.Value = _progressBar.Maximum;
