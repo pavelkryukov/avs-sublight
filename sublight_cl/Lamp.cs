@@ -120,12 +120,12 @@ namespace sublight_cl
 
                 switch (_side)
                 {
-                    case Side.Left:
+                    case Side.Right:
                         if (data[0] == 0x3C)
                         {
                             if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
                             {
-                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("liok"), 4, SocketFlags.None,
+                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("riok"), 4, SocketFlags.None,
                                                  _remote);
                             }
                         }
@@ -135,12 +135,12 @@ namespace sublight_cl
                         }
                         break;
 
-                    case Side.Right:
+                    case Side.Left:
                         if (data[0] == 0x30)
                         {
                             if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
                             {
-                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("riok"), 4, SocketFlags.None,
+                                _mysocket.SendTo(System.Text.Encoding.ASCII.GetBytes("liok"), 4, SocketFlags.None,
                                                  _remote);
                             }
                         }

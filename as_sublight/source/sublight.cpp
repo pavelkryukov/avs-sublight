@@ -7,10 +7,16 @@
 */
 
 #include "./sublight.h"
+
 /*
  * Constructor
  */
 Sublight::Sublight(PClip child) : GenericVideoFilter(child),
+                                  _setSizes(vi.IsYV12() ?
+                                             &Sublight::SetSizesYV12 :
+                                         vi.IsRGB24() ?
+                                             &Sublight::SetSizesIL24 :
+                                             &Sublight::SetSizesIL32),
                                   _getAv(vi.IsYV12() ?
                                              &Sublight::GetAvYV12 :
                                          vi.IsYUY2() ?
@@ -32,27 +38,17 @@ uint32 Sublight::YuvToRgb(uint32 Y, uint32 U, uint32 V) {
                            208 * ((signed __int32)V - 128)) >> 8;
     const sint32 B = (Yp + 516 * ((signed __int32)U - 128)) >> 8;
 
-    return Sublight::PACKRGBS(R, G, B);
+    return (CUTS(R) + (CUTS(G) << 8) + (CUTS(B) << 16)) << 8;
 }
 
-uint32 Sublight::GetAvRGB24(const PVideoFrame src, bool side, unsigned step) const {
-    // Get sizes
-    const unsigned width       = src->GetRowSize() >> 2;
-    const unsigned height      = src->GetHeight() >> 2;
-    const unsigned line        = src->GetPitch() - width;
-    const unsigned averageSize = width * height / 3;
-
-    // Get source pointers
-    // L - is beginning of the frame
-    // R - is 3/4 of the first line
-    register const pixel* srcp = side ? src->GetReadPtr() :
-                           src->GetReadPtr() + (width << 1) + width;
+uint32 Sublight::GetAvRGB24(const PVideoFrame src, coord_t xy) const {
+    register const pixel* srcp = src->GetReadPtr();
 
     // Step offset
-    srcp += src->GetPitch() * height * step;
+    srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
     // average stores
-    register uint32 B = 0;
+    register uint32 B = 0; // Yes I'm a believer
     register uint32 G = 0;
     register uint32 R = 0;
 
@@ -70,24 +66,14 @@ uint32 Sublight::GetAvRGB24(const PVideoFrame src, bool side, unsigned step) con
     R /= averageSize;
 
     // Collect colors into int32
-    return (B + (G << 8) + (R << 16)) << 8;
+    return ((B + (G << 8) + (R << 16)) << 8) + SIGNATURE + xy;
 }
 
-uint32 Sublight::GetAvRGB32(const PVideoFrame src, bool side, unsigned step) const {
-    // Get sizes
-    const unsigned width       = src->GetRowSize() >> 2;
-    const unsigned height      = src->GetHeight() >> 2;
-    const unsigned line        = src->GetPitch() - width;
-    const unsigned averageSize = (width * height) >> 2;
-
-    // Get source pointers
-    // L - is beginning of the frame
-    // R - is 3/4 of the first line
-    register const pixel* srcp = side ? src->GetReadPtr() :
-                           src->GetReadPtr() + (width << 1) + width;
+uint32 Sublight::GetAvRGB32(const PVideoFrame src, coord_t xy) const {
+    register const pixel* srcp = src->GetReadPtr();
 
     // Step offset
-    srcp += src->GetPitch() * height * step;
+    srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
     // average stores
     register uint32 B = 0;
@@ -109,24 +95,14 @@ uint32 Sublight::GetAvRGB32(const PVideoFrame src, bool side, unsigned step) con
     R /= averageSize;
 
     // Collect colors into int32
-    return ((B + (G << 8) + (R << 16)) << 8);
+    return ((B + (G << 8) + (R << 16)) << 8) + SIGNATURE + xy;
 }
 
-uint32 Sublight::GetAvYUY2(const PVideoFrame src, bool side, unsigned step) const {
-    // Get sizes
-    const unsigned width       = src->GetRowSize() >> 2;
-    const unsigned height      = src->GetHeight() >> 2;
-    const unsigned line        = src->GetPitch() - width;
-    const unsigned averageSize = width * height >> 2;
-
-    // Get source pointers
-    // L - is beginning of the frame
-    // R - is 3/4 of the first line
-    register const pixel* srcp = side ? src->GetReadPtr() :
-                           src->GetReadPtr() + (width << 1) + width;
+uint32 Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
+    register const pixel* srcp = src->GetReadPtr();
 
     // Step offset
-    srcp += src->GetPitch() * height * step;
+    srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
     // average stores
     register uint32 Y = 0;
@@ -148,35 +124,14 @@ uint32 Sublight::GetAvYUY2(const PVideoFrame src, bool side, unsigned step) cons
     V /= averageSize;
 
     // If format is RGB, collect colors into int32
-    return Sublight::YuvToRgb(Y, U, V);
+    return Sublight::YuvToRgb(Y, U, V) + SIGNATURE + xy;
 }
 
-uint32 Sublight::GetAvYV12(const PVideoFrame src, bool side, unsigned step) const {
-    // Get sizes
-    const unsigned width   = src->GetRowSize() >> 2;
-    const unsigned height  = src->GetHeight() >> 2;
-    const unsigned line    = src->GetPitch() - width;
-
-    const unsigned widthUV   = src->GetRowSize(PLANAR_U) >> 2;
-    const unsigned heightUV  = src->GetHeight(PLANAR_U) >> 2;
-    const unsigned lineUV    = src->GetPitch(PLANAR_U) - widthUV;
-
-    // Get source pointers
-    // L - is beginning of the frame
-    // R - is 3/4 of the first line
-    const pixel* srcp = src->GetReadPtr();
-    const pixel* srcUp = src->GetReadPtr(PLANAR_U);
-    const pixel* srcVp = src->GetReadPtr(PLANAR_V);
-    if (!side) {
-        srcp  += width    + (width << 1);
-        srcUp += widthUV  + (widthUV << 1);
-        srcVp += widthUV  + (widthUV << 1);
-    }
-
+uint32 Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
+    register const pixel* srcp = src->GetReadPtr();
+ 
     // Step offset
-    srcp  += src->GetPitch() * height * step;
-    srcUp += src->GetPitch(PLANAR_U) * heightUV * step;
-    srcVp += src->GetPitch(PLANAR_U) * heightUV * step;
+    srcp += src->GetPitch() * height * (xy & 3) + width * (xy >> 2);
 
     // Average stores
     register uint32 Y = 0;
@@ -189,6 +144,13 @@ uint32 Sublight::GetAvYV12(const PVideoFrame src, bool side, unsigned step) cons
         srcp += line;
     }
 
+    register const pixel* srcUp = src->GetReadPtr(PLANAR_U);
+    register const pixel* srcVp = src->GetReadPtr(PLANAR_V);
+ 
+    // Step offset
+    srcUp += src->GetPitch(PLANAR_U) * heightUV * (xy & 3) + widthUV * (xy >> 2);
+    srcVp += src->GetPitch(PLANAR_V) * heightUV * (xy & 3) + widthUV * (xy >> 2);
+
     register uint32 U = 0;
     register uint32 V = 0;
 
@@ -200,14 +162,48 @@ uint32 Sublight::GetAvYV12(const PVideoFrame src, bool side, unsigned step) cons
         srcUp += lineUV;
     }
 
-    const unsigned UVSize = widthUV * heightUV;
-
     // Make output bytes
-    return Sublight::YuvToRgb(Y / (width * height),
-                              U / UVSize,
-                              V / UVSize);
+    return Sublight::YuvToRgb(Y / averageSize,
+                              U / averageSizeUV,
+                              V / averageSizeUV) + SIGNATURE + xy;
 }
 
+
+void Sublight::SetSizesIL24(const PVideoFrame src) {
+    width  = src->GetRowSize() >> 2;
+    height = src->GetHeight() >> 2;
+    line   = src->GetPitch() - width;
+
+    averageSize = width * height / 3;
+}
+
+void Sublight::SetSizesIL32(const PVideoFrame src) {
+    width  = src->GetRowSize() >> 2;
+    height = src->GetHeight() >> 2;
+    line   = src->GetPitch() - width;
+
+    averageSize = width * height >> 2;
+}
+
+void Sublight::SetSizesYV12(const PVideoFrame src) {
+    width  = src->GetRowSize() >> 2;
+    height = src->GetHeight() >> 2;
+    line   = src->GetPitch() - width;
+
+    averageSize = width * height;
+
+    widthUV  = src->GetRowSize(PLANAR_U) >> 2;
+    heightUV = src->GetHeight(PLANAR_U) >> 2;
+    lineUV   = src->GetPitch(PLANAR_U) - widthUV;
+
+    averageSizeUV = widthUV * heightUV;
+}
+
+
+const coord_t Sublight::frames[] = {0x0, 0x4, 0x8, 0xC, 
+                                    0x1,           0xD, 
+                                    0x2,           0xE, 
+                                    0x3,           0xF};
 
 /*
  * Frame generator
@@ -215,9 +211,12 @@ uint32 Sublight::GetAvYV12(const PVideoFrame src, bool side, unsigned step) cons
 PVideoFrame __stdcall Sublight::GetFrame(int n, IScriptEnvironment* env) {
     const PVideoFrame src = child->GetFrame(n, env);
 
-    for (int i = 0; i < 4; ++i) {
-        this->Send((this->*_getAv)(src, true , i) + 0xFC + i);
-        this->Send((this->*_getAv)(src, false, i) + 0xF0 + i);
+    (this->*_setSizes)(src);
+
+    const unsigned amount = sizeof(frames) / sizeof(frames[0]);
+
+    for (unsigned i = 0; i < amount; ++i) {
+        this->Send((this->*_getAv)(src, frames[i]));
     }
 
     return src;
