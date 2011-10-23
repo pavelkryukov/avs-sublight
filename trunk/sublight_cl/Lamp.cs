@@ -11,8 +11,9 @@ namespace sublight_cl
         private readonly Label _sideLabel = new Label();
         private readonly PictureBox _closeButton = new PictureBox();
 
-        private readonly byte[] _chkL = { 0xC0, 0xFF, 0xFF, 0xFF };
-        private readonly byte[] _chkR = { 0xCC, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chk;
+        private readonly byte[] _chkAns;
+        private readonly byte _mask;
 
         private readonly PictureBox[] _fields = new PictureBox[4];
 
@@ -28,6 +29,21 @@ namespace sublight_cl
         internal Lamp(UInt16 port, Side side)
         {
             _side = side;
+
+            switch (_side)
+            {
+                case Side.Left:
+                    _chk =    new byte[] { 0x30, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
+                    _mask = 0xF0;
+                    
+                    break;
+                case Side.Right:
+                    _chk    = new byte[] { 0x3C, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0xCC, 0xFF, 0xFF, 0xFF };
+                    _mask = 0xFC;
+                    break;
+            }
 
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
             _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
@@ -121,40 +137,16 @@ namespace sublight_cl
                     continue;
                 }
 
-                switch (_side)
+                if ((data[0] == _chk[0]) && (data[1] == _chk[1]) && (data[2] == _chk[2]) && (data[3] == _chk[3]))
                 {
-                    case Side.Right:
-                        if (data[0] == 0x3C)
-                        {
-                            if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
-                            {
-                                _mysocket.SendTo(_chkR, 4, SocketFlags.None, _remote);
-                            }
-                        }
-                        else if ((data[0] & 0xFC) == 0xFC)
-                        {
-                            _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
-                        }
-                        break;
-
-                    case Side.Left:
-                        if (data[0] == 0x30)
-                        {
-                            if ((data[1] == 0xFF) && (data[2] == 0xFF) && (data[3] == 0xFF))
-                            {
-                                _mysocket.SendTo(_chkL, 4, SocketFlags.None, _remote);
-                            }
-                        }
-                        else if ((data[0] & 0xFC) == 0xF0)
-                        {
-                            _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
-                        }
-                        break;
-
-                    default:
-                        break;
+                    _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
                 }
 
+                else if ((data[0] & 0xFC) == _mask)
+                {
+                    _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+                }
+                
                 _closeButton.BackColor = _fields[0].BackColor;
                 _sideLabel.BackColor = _fields[0].BackColor;
                 Application.DoEvents();
