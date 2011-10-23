@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Net.Sockets;
 using System.Net;
+using System.Linq;
 
 namespace sublight_cl
 {
@@ -137,7 +138,7 @@ namespace sublight_cl
                     continue;
                 }
 
-                if ((data[0] == _chk[0]) && (data[1] == _chk[1]) && (data[2] == _chk[2]) && (data[3] == _chk[3]))
+                if (data.SequenceEqual(_chk))
                 {
                     _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
                 }
