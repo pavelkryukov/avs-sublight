@@ -5,11 +5,10 @@ using System.Net.Sockets;
 
 namespace sublight_cl
 {
-    class UdpReceiver
+    internal sealed class UdpReceiver
     {
         private readonly byte[] _chk;
         private readonly byte[] _chkAns;
-        private readonly byte _mask;
 
         public readonly Lamp Lamp;
 
@@ -20,10 +19,13 @@ namespace sublight_cl
 
         private const int Timeout = 100;
 
+
+        private delegate bool CheckIfMine(byte val);
+        private readonly CheckIfMine _checkIfMine;
+
         internal UdpReceiver(UInt16 port, Side side)
         {
-            Lamp = new Lamp(side);
-            Lamp.IsOn = true;
+            Lamp = new Lamp(side) {IsOn = true};
             Lamp.Show();
             _side = side;
 
@@ -32,13 +34,26 @@ namespace sublight_cl
                 case Side.Left:
                     _chk =    new byte[] { 0x00, 0xFF, 0xFF, 0xFF };
                     _chkAns = new byte[] { 0x04, 0xAA, 0xAA, 0xAA };
-                    _mask = 0x0C;
-                    
+                    _checkIfMine = data => (data & 0xCC) == 0x0C;
+
                     break;
                 case Side.Right:
                     _chk    = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
                     _chkAns = new byte[] { 0xC4, 0xAA, 0xAA, 0xAA };
-                    _mask = 0xCC;
+                    _checkIfMine = data => (data & 0xCC) == 0xCC;
+
+                    break;
+                case Side.Top:
+                    _chk = new byte[] { 0x40, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0x44, 0xAA, 0xAA, 0xAA };
+                    _checkIfMine = data => (data & 0x3C) == 0x0C;
+
+                    break;
+                case Side.Bottom:
+                    _chk = new byte[] { 0x70, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0x74, 0xAA, 0xAA, 0xAA };
+                    _checkIfMine = data => (data & 0x3C) == 0x3C;
+
                     break;
             }
 
@@ -103,11 +118,12 @@ namespace sublight_cl
                     Lamp.DoEvents();
                 }
 
-                else if ((data[0] & 0xCC) == _mask && Crc(data))
+                else if (_checkIfMine(data[0]) && Crc(data))
                 {
                     Lamp.SetColor(data);
                 }
 
+                Lamp.DoEvents();
             }
         }
     }

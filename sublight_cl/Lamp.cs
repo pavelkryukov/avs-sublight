@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace sublight_cl
@@ -10,14 +11,15 @@ namespace sublight_cl
 
         private readonly PictureBox[] _fields = new PictureBox[4];
 
-        private readonly Side _side;
+        private delegate int GetNum(byte val);
+        private readonly GetNum _getNum;
+
+        private static readonly string[] SideNames = {"Left", "Right", "Top", "Bottom"};
 
         public bool IsOn;
 
         internal Lamp(Side side)
         {
-            _side = side;
-
             SuspendLayout();
 
             Top = 0;
@@ -25,16 +27,43 @@ namespace sublight_cl
             Width = Screen.PrimaryScreen.Bounds.Width;
             Height = Screen.PrimaryScreen.Bounds.Height;
 
+            switch (side)
+            {
+                case Side.Left:
+                case Side.Right:
+                    _getNum = data => (data >> 4) & 3;
+                    break;
+                case Side.Top:
+                case Side.Bottom:
+                    _getNum = data => (data >> 6) & 3;
+                    break;
+            }
+
             for (var i = 0; i < 4; i++ )
             {
-                _fields[i] = new PictureBox
+                switch (side) {
+                    case Side.Left:
+                    case Side.Right:
+                        _fields[i] = new PictureBox
                                  {
                                      Top = i*Screen.PrimaryScreen.Bounds.Height/4,
                                      Left = 0,
                                      Width = Screen.PrimaryScreen.Bounds.Width,
-                                     Height = Screen.PrimaryScreen.Bounds.Height/4,
-                                     TabIndex = i
+                                     Height = Screen.PrimaryScreen.Bounds.Height/4
                                  };
+                        break;
+                    case Side.Top:
+                    case Side.Bottom:
+                        _fields[i] = new PictureBox
+                                 {
+                                     Top = 0,
+                                     Left = i*Screen.PrimaryScreen.Bounds.Width/4,
+                                     Width = Screen.PrimaryScreen.Bounds.Width/4,
+                                     Height = Screen.PrimaryScreen.Bounds.Height
+                                 };
+                        break;
+                }
+                TabIndex = i;
                 Controls.Add(_fields[i]);
             }
 
@@ -46,7 +75,7 @@ namespace sublight_cl
             _sideLabel.Size = new Size(26, 13);
             _sideLabel.Font = new Font("Microsoft Sans Serif", 36F, FontStyle.Regular);
             _sideLabel.TabIndex = 5;
-            _sideLabel.Text = side == Side.Left ? @"Left" : @"Right";
+            _sideLabel.Text = SideNames[(int)side];
             Controls.Add(_sideLabel);
 
             _closeButton.Size = new Size(64, 64);
@@ -75,7 +104,7 @@ namespace sublight_cl
 
         public void SetColor(byte[] data)
         {
-            _fields[(data[0] >> 4) & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+            _fields[_getNum(data[0])].BackColor = Color.FromArgb(data[1], data[2], data[3]);
 
             _closeButton.BackColor = _fields[0].BackColor;
             _sideLabel.BackColor = _fields[0].BackColor;
