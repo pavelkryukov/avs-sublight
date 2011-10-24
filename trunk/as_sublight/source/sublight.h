@@ -21,12 +21,21 @@
 class Sublight : public GenericVideoFilter {
   private:
     // Signature of sender
-    static const coord_t SIGNATURE = 0xF0;
+    static const coord_t SIGNATURE = 0x0C;
 
     // Trim 4-byte number to 1-byte
     static inline packet_t CUTS(signed __int32 a) {
         return (a > 0xFF) ? 0xFF : 
                (a < 0x00) ? 0x00 : static_cast<packet_t>(a);
+    }
+
+    static inline packet_t CRC(packet_t source) {
+        packet_t sourceOrig = source;
+        unsigned sum = 0;
+        for (; source > 0; source >>= 2) {
+            sum += source & 3; 
+        }
+        return sourceOrig + (sum & 3);
     }
 
     // YUV to RGB converter
