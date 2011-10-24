@@ -5,7 +5,7 @@ namespace sublight_cl
 {
     internal partial class AppForm : Form
     {
-        private static Lamp _lamp;
+        private static UdpReceiver _udpReceiver;
         
         public AppForm()
         {
@@ -14,7 +14,7 @@ namespace sublight_cl
 
         private void StartButtonClick(object sender, EventArgs e)
         {
-            if (_lamp != null) return;
+            if (_udpReceiver != null) return;
             UInt16 port;
             try
             {
@@ -33,22 +33,20 @@ namespace sublight_cl
                 return;
             }
 
-            _lamp = new Lamp(port, leftButton.Checked ? Side.Left : Side.Right);
+            _udpReceiver = new UdpReceiver(port, leftButton.Checked ? Side.Left : Side.Right);
+            _udpReceiver.Start();
 
-            _lamp.Show();
-            _lamp.Start();
-
-            _lamp.Close();
-            _lamp.KillSocket();
-            _lamp = null;
+            _udpReceiver.Lamp.Close();
+            _udpReceiver.KillSocket();
+            _udpReceiver = null;
         }
 
         private void OnKill(object sender, FormClosedEventArgs e)
         {
-            if (_lamp == null) return;
-            _lamp.IsOn = false;
-            _lamp.KillSocket();
-            _lamp.Close();
+            if (_udpReceiver == null) return;
+            _udpReceiver.Lamp.IsOn = false;
+            _udpReceiver.KillSocket();
+            _udpReceiver.Lamp.Close();
             Application.Exit();
         }
     }

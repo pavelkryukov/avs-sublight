@@ -1,9 +1,5 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using System.Net.Sockets;
-using System.Net;
-using System.Linq;
 
 namespace sublight_cl
 {
@@ -12,47 +8,15 @@ namespace sublight_cl
         private readonly Label _sideLabel = new Label();
         private readonly PictureBox _closeButton = new PictureBox();
 
-        private readonly byte[] _chk;
-        private readonly byte[] _chkAns;
-        private readonly byte _mask;
-
         private readonly PictureBox[] _fields = new PictureBox[4];
 
         private readonly Side _side;
 
-        private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private EndPoint _remote;
-
         public bool IsOn;
-        
-        private const int Timeout = 100;
 
-        internal Lamp(UInt16 port, Side side)
+        internal Lamp(Side side)
         {
             _side = side;
-
-            switch (_side)
-            {
-                case Side.Left:
-                    _chk =    new byte[] { 0x00, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0x04, 0xAA, 0xAA, 0xAA };
-                    _mask = 0x0C;
-                    
-                    break;
-                case Side.Right:
-                    _chk    = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0xC4, 0xAA, 0xAA, 0xAA };
-                    _mask = 0xCC;
-                    break;
-            }
-
-            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
-            _mysocket.ReceiveTimeout = Timeout;
-
-            IsOn = true;
-
-            _remote = new IPEndPoint(IPAddress.Any,0);
 
             SuspendLayout();
 
@@ -109,68 +73,18 @@ namespace sublight_cl
             _sideLabel.BringToFront();
         }
 
-        public void KillSocket()
+        public void SetColor(byte[] data)
         {
-            _mysocket.Close();
+            _fields[(data[0] >> 4) & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+
+            _closeButton.BackColor = _fields[0].BackColor;
+            _sideLabel.BackColor = _fields[0].BackColor;
+            Application.DoEvents();
         }
 
-        ~Lamp()
+        public void DoEvents()
         {
-            KillSocket();
-        }
-
-        public void Start()
-        {
-            while(true)
-            {
-                var data = new byte[4];
-                try
-                {
-                    _mysocket.ReceiveFrom(data, 4, SocketFlags.None, ref _remote);
-                }
-                catch (SocketException)
-                {
-                    if (!IsOn)
-                    {
-                        break;
-                    }
-                    Application.DoEvents();
-                    continue;
-                }
-
-                if (data.SequenceEqual(_chk))
-                {
-                    _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
-                }
-
-                else if ((data[0] & 0xCC) == _mask && Crc(data))
-                {
-                    _fields[(data[0] >> 4) & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
-                }
-                
-                _closeButton.BackColor = _fields[0].BackColor;
-                _sideLabel.BackColor = _fields[0].BackColor;
-                Application.DoEvents();
-            }
-        }
-
-        static byte ControlSumByte(byte source)
-        {
-            byte sum = 0;
-            for (; source > 0; source >>= 1)
-            {
-                sum += (byte)(source & 1);
-            }
-            return sum;
-        }
-
-        static bool Crc(byte[] check)
-        {
-            return (check[0] & 0x3) == ((ControlSumByte((byte)(check[0] & ~0x3)) +
-                                         ControlSumByte(check[1]) + 
-                                         ControlSumByte(check[2]) +
-                                         ControlSumByte(check[3])
-                                        ) & 3);
+            Application.DoEvents();
         }
     }
 }
