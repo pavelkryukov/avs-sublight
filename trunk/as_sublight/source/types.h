@@ -9,10 +9,13 @@
 #ifndef AS_SUBLIGHT_SOURCE_TYPES_H_
 #define AS_SUBLIGHT_SOURCE_TYPES_H_
 
-typedef unsigned __int8 pixel;
+typedef unsigned __int8 pixel_t;
+typedef unsigned __int8 sectorNum_t;
 typedef unsigned __int8 coord_t;
-typedef unsigned __int32 uint32;
-typedef signed __int32 sint32;
+typedef unsigned __int16 port_t;
+typedef unsigned __int32 fsize_t;
+typedef unsigned __int32 average_t;
+typedef unsigned __int32 packet_t;
 
 #endif  // AS_SUBLIGHT_SOURCE_TYPES_H_
 

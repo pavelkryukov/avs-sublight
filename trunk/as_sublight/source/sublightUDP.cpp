@@ -13,7 +13,7 @@
 #include "./sublightUDP.h"
 
 SublightUDP::SublightUDP(PClip child,
-                         unsigned __int16 port,
+                         port_t port,
                          const char* const ip) : Sublight(child) {
     WSADATA wsadata = {};
     WSAStartup(MAKEWORD(2, 2), &wsadata);
@@ -33,7 +33,7 @@ SublightUDP::~SublightUDP() {
     closesocket(this->_sd);
 }
 
-void SublightUDP::Send(uint32 data) const {
+void SublightUDP::Send(packet_t data) const {
     sendto(_sd, reinterpret_cast<char*>(&data),  sizeof(data), 0,
         reinterpret_cast<const sockaddr*>(&dest_addr), sizeof(dest_addr));
 }
