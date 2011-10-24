@@ -35,13 +35,13 @@ namespace sublight_cl
             {
                 case Side.Left:
                     _chk =    new byte[] { 0x00, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0x04, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0x04, 0xAA, 0xAA, 0xAA };
                     _mask = 0x0C;
                     
                     break;
                 case Side.Right:
                     _chk    = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0xC4, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0xC4, 0xAA, 0xAA, 0xAA };
                     _mask = 0xCC;
                     break;
             }
