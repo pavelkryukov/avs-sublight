@@ -157,21 +157,20 @@ namespace sublight_cl
         static byte ControlSumByte(byte source)
         {
             byte sum = 0;
-            for (; source > 0; source >>= 2)
+            for (; source > 0; source >>= 1)
             {
-                sum += (byte)(source & 3);
+                sum += (byte)(source & 1);
             }
             return sum;
         }
 
         static bool Crc(byte[] check)
         {
-            var chSum = (byte)(check[0] & 0x3);
-            return chSum == (byte)((ControlSumByte((byte)(check[0] & ~0x3)) +
-                                    ControlSumByte(check[1]) + 
-                                    ControlSumByte(check[2]) +
-                                    ControlSumByte(check[3])
-                                    ) & 3);
+            return (check[0] & 0x3) == ((ControlSumByte((byte)(check[0] & ~0x3)) +
+                                         ControlSumByte(check[1]) + 
+                                         ControlSumByte(check[2]) +
+                                         ControlSumByte(check[3])
+                                        ) & 3);
         }
     }
 }

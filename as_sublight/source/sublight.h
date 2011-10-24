@@ -31,9 +31,9 @@ class Sublight : public GenericVideoFilter {
 
     static inline packet_t CRC(packet_t source) {
         packet_t sourceOrig = source;
-        unsigned sum = 0;
-        for (; source > 0; source >>= 2) {
-            sum += source & 3; 
+        coord_t sum = 0;
+        for (; source > 0; source >>= 1) {
+            sum += source & 1; 
         }
         return sourceOrig + (sum & 3);
     }
