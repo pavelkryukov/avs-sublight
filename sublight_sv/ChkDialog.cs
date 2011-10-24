@@ -9,11 +9,11 @@ namespace sublight_sv
     {
         private readonly Socket _mysocket; 
 
-        private readonly byte[] _chkL = { 0x30, 0xFF, 0xFF, 0xFF };
-        private readonly byte[] _chkR = { 0x3C, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkL = { 0x00, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkR = { 0xC0, 0xFF, 0xFF, 0xFF };
 
-        private readonly byte[] _chkLAns = { 0xC0, 0xFF, 0xFF, 0xFF };
-        private readonly byte[] _chkRAns = { 0xCC, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkLAns = { 0x04, 0xFF, 0xFF, 0xFF };
+        private readonly byte[] _chkRAns = { 0xC4, 0xFF, 0xFF, 0xFF };
 
         private readonly IPEndPoint _sender;
 

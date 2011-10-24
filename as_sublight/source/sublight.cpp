@@ -66,7 +66,8 @@ packet_t Sublight::GetAvRGB24(const PVideoFrame src, coord_t xy) const {
     R /= averageSize;
 
     // Collect colors into int32
-    return ((B + (G << 8) + (R << 16)) << 8) + Sublight::SIGNATURE + xy;
+    return CRC(((B + (G << 8) + (R << 16)) << 8) + 
+               (xy << 4) + Sublight::SIGNATURE);
 }
 
 packet_t Sublight::GetAvRGB32(const PVideoFrame src, coord_t xy) const {
@@ -94,7 +95,8 @@ packet_t Sublight::GetAvRGB32(const PVideoFrame src, coord_t xy) const {
     R /= this->averageSize;
 
     // Collect colors into int32
-    return ((B + (G << 8) + (R << 16)) << 8) + Sublight::SIGNATURE + xy;
+    return CRC(((B + (G << 8) + (R << 16)) << 8) + 
+               (xy << 4) + Sublight::SIGNATURE);
 }
 
 packet_t Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
@@ -122,7 +124,8 @@ packet_t Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
     V /= this->averageSizeUV;
 
     // If format is RGB, collect colors into int32
-    return Sublight::YuvToRgb(Y, U, V) + Sublight::SIGNATURE + xy;
+    return CRC(Sublight::YuvToRgb(Y, U, V) + 
+               (xy << 4) + Sublight::SIGNATURE);
 }
 
 packet_t Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
@@ -163,7 +166,8 @@ packet_t Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
     V /= this->averageSizeUV;
 
     // Make output bytes
-    return Sublight::YuvToRgb(Y, U, V) + Sublight::SIGNATURE + xy;
+    return CRC(Sublight::YuvToRgb(Y, U, V) + 
+              (xy << 4) + Sublight::SIGNATURE);
 }
 
 inline void Sublight::SetSizes(const PVideoFrame src) {

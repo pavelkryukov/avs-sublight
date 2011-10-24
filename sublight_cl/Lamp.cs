@@ -34,15 +34,15 @@ namespace sublight_cl
             switch (_side)
             {
                 case Side.Left:
-                    _chk =    new byte[] { 0x30, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
-                    _mask = 0xF0;
+                    _chk =    new byte[] { 0x00, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0x04, 0xFF, 0xFF, 0xFF };
+                    _mask = 0x0C;
                     
                     break;
                 case Side.Right:
-                    _chk    = new byte[] { 0x3C, 0xFF, 0xFF, 0xFF };
-                    _chkAns = new byte[] { 0xCC, 0xFF, 0xFF, 0xFF };
-                    _mask = 0xFC;
+                    _chk    = new byte[] { 0xC0, 0xFF, 0xFF, 0xFF };
+                    _chkAns = new byte[] { 0xC4, 0xFF, 0xFF, 0xFF };
+                    _mask = 0xCC;
                     break;
             }
 
@@ -143,15 +143,35 @@ namespace sublight_cl
                     _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
                 }
 
-                else if ((data[0] & 0xFC) == _mask)
+                else if ((data[0] & 0xCC) == _mask && Crc(data))
                 {
-                    _fields[data[0] & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
+                    _fields[(data[0] >> 4) & 0x03].BackColor = Color.FromArgb(data[1], data[2], data[3]);
                 }
                 
                 _closeButton.BackColor = _fields[0].BackColor;
                 _sideLabel.BackColor = _fields[0].BackColor;
                 Application.DoEvents();
             }
+        }
+
+        static byte ControlSumByte(byte source)
+        {
+            byte sum = 0;
+            for (; source > 0; source >>= 2)
+            {
+                sum += (byte)(source & 3);
+            }
+            return sum;
+        }
+
+        static bool Crc(byte[] check)
+        {
+            var chSum = (byte)(check[0] & 0x3);
+            return chSum == (byte)((ControlSumByte((byte)(check[0] & ~0x3)) +
+                                    ControlSumByte(check[1]) + 
+                                    ControlSumByte(check[2]) +
+                                    ControlSumByte(check[3])
+                                    ) & 3);
         }
     }
 }
