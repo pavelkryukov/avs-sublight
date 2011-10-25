@@ -34,6 +34,7 @@
             this.rightButton = new System.Windows.Forms.RadioButton();
             this.sideBox = new System.Windows.Forms.GroupBox();
             this.startButton = new System.Windows.Forms.Button();
+            this.topButton = new System.Windows.Forms.RadioButton();
             this.sideBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,11 +80,12 @@
             // 
             // sideBox
             // 
+            this.sideBox.Controls.Add(this.topButton);
             this.sideBox.Controls.Add(this.leftButton);
             this.sideBox.Controls.Add(this.rightButton);
             this.sideBox.Location = new System.Drawing.Point(12, 38);
             this.sideBox.Name = "sideBox";
-            this.sideBox.Size = new System.Drawing.Size(137, 77);
+            this.sideBox.Size = new System.Drawing.Size(137, 91);
             this.sideBox.TabIndex = 4;
             this.sideBox.TabStop = false;
             this.sideBox.Text = "Side";
@@ -97,6 +99,17 @@
             this.startButton.Text = "Start";
             this.startButton.UseVisualStyleBackColor = true;
             this.startButton.Click += new System.EventHandler(this.StartButtonClick);
+            // 
+            // topButton
+            // 
+            this.topButton.AutoSize = true;
+            this.topButton.Location = new System.Drawing.Point(6, 65);
+            this.topButton.Name = "topButton";
+            this.topButton.Size = new System.Drawing.Size(44, 17);
+            this.topButton.TabIndex = 4;
+            this.topButton.TabStop = true;
+            this.topButton.Text = "Top";
+            this.topButton.UseVisualStyleBackColor = true;
             // 
             // AppForm
             // 
@@ -128,6 +141,7 @@
         private System.Windows.Forms.RadioButton rightButton;
         private System.Windows.Forms.GroupBox sideBox;
         private System.Windows.Forms.Button startButton;
+        private System.Windows.Forms.RadioButton topButton;
  //       private System.Windows.Forms.Button stopButton;
     }
 }

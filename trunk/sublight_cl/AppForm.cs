@@ -33,7 +33,8 @@ namespace sublight_cl
                 return;
             }
 
-            _udpReceiver = new ReceiverUdp(port, leftButton.Checked ? Side.Left : Side.Right);
+            _udpReceiver = new ReceiverUdp(port, leftButton.Checked ? Side.Left : 
+                                                rightButton.Checked ? Side.Right : Side.Top);
             _udpReceiver.Start();
 
             _udpReceiver.Lamp.Close();
