@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 
 namespace sublight_cl
 {
-    internal sealed class UdpReceiver
+    internal abstract class Receiver
     {
         private readonly byte[] _chk;
         private readonly byte[] _chkAns;
@@ -14,15 +12,12 @@ namespace sublight_cl
 
         private readonly Side _side;
 
-        private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private EndPoint _remote;
+        private readonly Func<byte, bool> _checkIfMine;
 
-        private const int Timeout = 100;
+        internal abstract void Receive(byte[] value);
+        internal abstract void Send(byte[] value);
 
-        private delegate bool CheckIfMine(byte val);
-        private readonly CheckIfMine _checkIfMine;
-
-        internal UdpReceiver(UInt16 port, Side side)
+        internal Receiver(Side side)
         {
             Lamp = new Lamp4(side) {IsOn = true};
             Lamp.Show();
@@ -55,22 +50,6 @@ namespace sublight_cl
 
                     break;
             }
-
-            _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
-            _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
-            _mysocket.ReceiveTimeout = Timeout;
-
-            _remote = new IPEndPoint(IPAddress.Any,0);
-        }
-
-        public void KillSocket()
-        {
-            _mysocket.Close();
-        }
-
-        ~UdpReceiver()
-        {
-            KillSocket();
         }
 
         private static byte ControlSumByte(byte source)
@@ -100,9 +79,9 @@ namespace sublight_cl
                 var data = new byte[4];
                 try
                 {
-                    _mysocket.ReceiveFrom(data, 4, SocketFlags.None, ref _remote);
+                    Receive(data);
                 }
-                catch (SocketException)
+                catch (ReceiverException)
                 {
                     if (!Lamp.IsOn)
                     {
@@ -113,7 +92,7 @@ namespace sublight_cl
 
                 if (data.SequenceEqual(_chk))
                 {
-                    _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
+                    Send(_chkAns);
                 }
 
                 else if (_checkIfMine(data[0]) && Crc(data))
