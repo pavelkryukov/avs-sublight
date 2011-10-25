@@ -63,7 +63,6 @@
     <Compile Include="AppForm.Designer.cs">
       <DependentUpon>AppForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ReceiverException.cs" />
     <Compile Include="ReceiverUDP.cs" />
     <Compile Include="Side.cs" />
     <Compile Include="Lamp4.cs">

@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace sublight_cl
 {
-    internal class ReceiverUdp : Receiver
+    internal sealed class ReceiverUdp : Receiver
     {
         private const int Timeout = 100;
 
