@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace sublight_cl
@@ -28,7 +27,7 @@ namespace sublight_cl
         private readonly Socket _mysocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private EndPoint _remote;
 
-        internal ReceiverUdp(UInt16 port, Side side) : base(side)
+        internal ReceiverUdp(System.UInt16 port, Side side) : base(side)
         {
             _mysocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
             _mysocket.Bind(new IPEndPoint(IPAddress.Any, port));
