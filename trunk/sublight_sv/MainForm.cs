@@ -6,10 +6,16 @@ namespace sublight_sv
 {
     internal partial class MainForm : Form
     {
-        public bool Lchkd;
-        public bool Rchkd;
-
-        private CheckUdp _chkDialog;
+        public bool Lchkd
+        {
+            set { LcheckBox.Checked = value; }
+            private get { return LcheckBox.Checked; }
+        }
+        public bool Rchkd
+        {
+            set { RcheckBox.Checked = value; }
+            private get { return RcheckBox.Checked; }
+        }
 
         public MainForm()
         {
@@ -34,15 +40,13 @@ namespace sublight_sv
         {
             var t = new System.Threading.Thread(() =>
                                                     {
-                                                        _chkDialog = new CheckUdp(this, Convert.ToUInt16(portText.Text));
-                                                        _chkDialog.StartSending();
-                                                        _chkDialog.KillSocket();
+                                                        var chkDialog = new CheckUdp(this, Convert.ToUInt16(portText.Text));
+                                                        chkDialog.StartSending();
+                                                        chkDialog.Dispose();
                                                     });
             t.Start();
             t.Join();
 
-            LcheckBox.Checked = Lchkd;
-            RcheckBox.Checked = Rchkd;
             if (Lchkd)
                 statusLabel.Text = @"Left is OK ";
             if (Rchkd)
@@ -52,7 +56,6 @@ namespace sublight_sv
                 statusLabel.Text = @"No clients connected ";
             }
             Application.DoEvents();
-
         }
 
         private void StartButtonClick(object sender, EventArgs e)
