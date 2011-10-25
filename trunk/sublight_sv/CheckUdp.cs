@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace sublight_sv
 {
-    internal class CheckUdp : Check
+    internal sealed class CheckUdp : Check
     {
         private readonly Socket _mysocket; 
         private readonly IPEndPoint _sender;

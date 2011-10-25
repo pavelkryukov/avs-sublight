@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using System.Linq;
+using Microsoft.Win32;
 
 namespace sublight_sv
 {
@@ -8,42 +9,17 @@ namespace sublight_sv
 
         static private string GetNameWithVariable()
         {
-            foreach (var extension in Extensions)
+            // F**k. Original code is in rev109
+            foreach (var value in from extension in Extensions
+                                  select Registry.ClassesRoot.OpenSubKey(extension)
+                                  into aviEntry where aviEntry != null where aviEntry.GetValue("") != null 
+                                  select Registry.ClassesRoot.OpenSubKey(aviEntry.GetValue("").ToString())
+                                  into command where command != null select command.OpenSubKey("Shell")
+                                  into command where command != null select command.OpenSubKey("Open")
+                                  into command where command != null select command.OpenSubKey("Command")
+                                  into command where command != null select command.GetValue("")
+                                  into value where value != null select value)
             {
-                RegistryKey aviEntry = Registry.ClassesRoot.OpenSubKey(extension);
-                if (aviEntry == null)
-                {
-                    continue;
-                }
-                if (aviEntry.GetValue("") == null)
-                {
-                    continue;
-                }
-                var command = Registry.ClassesRoot.OpenSubKey(aviEntry.GetValue("").ToString());
-                if (command == null)
-                {
-                    continue;
-                }
-                command = command.OpenSubKey("Shell");
-                if (command == null)
-                {
-                    continue;
-                }
-                command = command.OpenSubKey("Open");
-                if (command == null)
-                {
-                    continue;
-                }
-                command = command.OpenSubKey("Command");
-                if (command == null)
-                {
-                    continue;
-                }
-                var value = command.GetValue("");
-                if (value == null)
-                {
-                    continue;
-                }
                 return value.ToString();
             }
             return "";
