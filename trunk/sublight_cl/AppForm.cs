@@ -5,7 +5,7 @@ namespace sublight_cl
 {
     internal partial class AppForm : Form
     {
-        private static UdpReceiver _udpReceiver;
+        private static ReceiverUdp _udpReceiver;
         
         public AppForm()
         {
@@ -33,7 +33,7 @@ namespace sublight_cl
                 return;
             }
 
-            _udpReceiver = new UdpReceiver(port, leftButton.Checked ? Side.Left : Side.Right);
+            _udpReceiver = new ReceiverUdp(port, leftButton.Checked ? Side.Left : Side.Right);
             _udpReceiver.Start();
 
             _udpReceiver.Lamp.Close();
