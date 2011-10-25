@@ -38,7 +38,6 @@ namespace sublight_cl
             _udpReceiver.Start();
 
             _udpReceiver.Lamp.Close();
-            _udpReceiver.KillSocket();
             _udpReceiver = null;
         }
 
@@ -46,8 +45,10 @@ namespace sublight_cl
         {
             if (_udpReceiver == null) return;
             _udpReceiver.Lamp.IsOn = false;
-            _udpReceiver.KillSocket();
             _udpReceiver.Lamp.Close();
+
+            _udpReceiver = null;
+
             Application.Exit();
         }
     }
