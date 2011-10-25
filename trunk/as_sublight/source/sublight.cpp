@@ -159,6 +159,7 @@ packet_t Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
              V += *(srcVp++);
         }
         srcUp += lineUV;
+        srcVp += lineUV;
     }
 
     Y /= this->averageSize;
