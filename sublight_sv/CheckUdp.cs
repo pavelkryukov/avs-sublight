@@ -3,7 +3,7 @@ using System.Net.Sockets;
 
 namespace sublight_sv
 {
-    internal sealed class CheckUdp : Check
+    internal sealed class CheckUdp : Check, System.IDisposable
     {
         private readonly Socket _mysocket; 
         private readonly IPEndPoint _sender;
@@ -36,7 +36,12 @@ namespace sublight_sv
             _sender = new IPEndPoint(IPAddress.Broadcast, port);
         }
 
-        public void KillSocket()
+        public void Dispose()
+        {
+            _mysocket.Close();
+        }
+
+        ~CheckUdp()
         {
             _mysocket.Close();
         }
