@@ -5,21 +5,21 @@ namespace sublight_sv
 {
     abstract internal class Check
     {
-        private readonly byte[] _chkL = { 0x00, 0xFF, 0xFF, 0xFF };
-        private readonly byte[] _chkR = { 0xC0, 0xFF, 0xFF, 0xFF };
+        private static readonly byte[] ChkL = { 0x00, 0xFF, 0xFF, 0xFF };
+        private static readonly byte[] ChkLAns = { 0x04, 0xAA, 0xAA, 0xAA };
 
-        private readonly byte[] _chkLAns = { 0x04, 0xAA, 0xAA, 0xAA };
-        private readonly byte[] _chkRAns = { 0xC4, 0xAA, 0xAA, 0xAA };
+        private static readonly byte[] ChkR = { 0xC0, 0xFF, 0xFF, 0xFF };
+        private static readonly byte[] ChkRAns = { 0xC4, 0xAA, 0xAA, 0xAA };
 
         internal abstract void Send(byte[] data);
         internal abstract byte[] Receive();
         internal abstract bool IsAvailable();
 
         private readonly Timer _timer;
+        private int _i;
 
         private readonly ChkDialog _chkDialog;
 
-        private int _i;
 
         internal Check(MainForm parent)
         {
@@ -58,11 +58,11 @@ namespace sublight_sv
         {
             _chkDialog.ClearProgressBar();
 
-            _chkDialog.SetLeft  = SendAndReceiveData(_chkL, _chkLAns);
+            _chkDialog.SetLeft  = SendAndReceiveData(ChkL, ChkLAns);
             _chkDialog.AddProgressBar();
             _chkDialog.ReDraw();
 
-            _chkDialog.SetRight = SendAndReceiveData(_chkR, _chkRAns);
+            _chkDialog.SetRight = SendAndReceiveData(ChkR, ChkRAns);
             _chkDialog.AddProgressBar();
             _chkDialog.ReDraw();
         }
