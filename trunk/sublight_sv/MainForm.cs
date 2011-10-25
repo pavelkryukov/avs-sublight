@@ -4,12 +4,12 @@ using System.IO;
 
 namespace sublight_sv
 {
-    public partial class MainForm : Form
+    internal partial class MainForm : Form
     {
         public bool Lchkd;
         public bool Rchkd;
 
-        private ChkDialog _chkDialog;
+        private CheckUdp _chkDialog;
 
         public MainForm()
         {
@@ -34,8 +34,9 @@ namespace sublight_sv
         {
             var t = new System.Threading.Thread(() =>
                                                     {
-                                                        _chkDialog = new ChkDialog(this, Convert.ToInt16(portText.Text));
+                                                        _chkDialog = new CheckUdp(this, Convert.ToUInt16(portText.Text));
                                                         _chkDialog.StartSending();
+                                                        _chkDialog.KillSocket();
                                                     });
             t.Start();
             t.Join();
