@@ -5,6 +5,10 @@ namespace sublight_cl
 {
     internal abstract class Receiver
     {
+        internal sealed class ReceiverException : Exception
+        {
+        };
+
         private readonly byte[] _chk;
         private readonly byte[] _chkAns;
 

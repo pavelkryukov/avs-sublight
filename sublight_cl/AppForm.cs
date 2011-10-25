@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace sublight_cl
 {
-    internal partial class AppForm : Form
+    internal sealed partial class AppForm : Form
     {
         private static ReceiverUdp _udpReceiver;
         
