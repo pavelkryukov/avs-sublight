@@ -36,14 +36,9 @@ namespace sublight_cl
             _remote = new IPEndPoint(IPAddress.Any, 0);
         }
 
-        public void KillSocket()
+        ~ReceiverUdp()
         {
             _mysocket.Close();
         }
-
-        ~ReceiverUdp()
-        {
-            KillSocket();
-        }
-    } 
+    }
 }
