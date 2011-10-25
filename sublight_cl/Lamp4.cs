@@ -26,42 +26,41 @@ namespace sublight_cl
             Width = Screen.PrimaryScreen.Bounds.Width;
             Height = Screen.PrimaryScreen.Bounds.Height;
 
+            System.Func<int, PictureBox> geometry;
+
             switch (side)
             {
                 case Side.Left:
                 case Side.Right:
                     _getNum = data => (data >> 4) & 3;
+                    geometry = i => new PictureBox
+                                        {
+                                            Top = i*Screen.PrimaryScreen.Bounds.Height/4,
+                                            Left = 0,
+                                            Width = Screen.PrimaryScreen.Bounds.Width,
+                                            Height = Screen.PrimaryScreen.Bounds.Height/4
+                                        };
                     break;
                 case Side.Top:
                 case Side.Bottom:
                     _getNum = data => (data >> 6) & 3;
+                    geometry = i => new PictureBox
+                                        {
+                                            Top = 0,
+                                            Left = i*Screen.PrimaryScreen.Bounds.Width/4,
+                                            Width = Screen.PrimaryScreen.Bounds.Width/4,
+                                            Height = Screen.PrimaryScreen.Bounds.Height
+                                        };
+                    break;
+                default:
+                    _getNum = data => 0;
+                    geometry = i => null;
                     break;
             }
 
-            for (var i = 0; i < 4; i++ )
+            for (var i = 0; i < 4; i++)
             {
-                switch (side) {
-                    case Side.Left:
-                    case Side.Right:
-                        _fields[i] = new PictureBox
-                                 {
-                                     Top = i*Screen.PrimaryScreen.Bounds.Height/4,
-                                     Left = 0,
-                                     Width = Screen.PrimaryScreen.Bounds.Width,
-                                     Height = Screen.PrimaryScreen.Bounds.Height/4
-                                 };
-                        break;
-                    case Side.Top:
-                    case Side.Bottom:
-                        _fields[i] = new PictureBox
-                                 {
-                                     Top = 0,
-                                     Left = i*Screen.PrimaryScreen.Bounds.Width/4,
-                                     Width = Screen.PrimaryScreen.Bounds.Width/4,
-                                     Height = Screen.PrimaryScreen.Bounds.Height
-                                 };
-                        break;
-                }
+                _fields[i] = geometry(i);
                 TabIndex = i;
                 Controls.Add(_fields[i]);
             }
