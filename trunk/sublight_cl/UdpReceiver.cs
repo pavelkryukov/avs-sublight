@@ -10,7 +10,7 @@ namespace sublight_cl
         private readonly byte[] _chk;
         private readonly byte[] _chkAns;
 
-        public readonly Lamp Lamp;
+        public readonly Lamp4 Lamp;
 
         private readonly Side _side;
 
@@ -19,13 +19,12 @@ namespace sublight_cl
 
         private const int Timeout = 100;
 
-
         private delegate bool CheckIfMine(byte val);
         private readonly CheckIfMine _checkIfMine;
 
         internal UdpReceiver(UInt16 port, Side side)
         {
-            Lamp = new Lamp(side) {IsOn = true};
+            Lamp = new Lamp4(side) {IsOn = true};
             Lamp.Show();
             _side = side;
 
@@ -97,6 +96,7 @@ namespace sublight_cl
         {
             while(true)
             {
+                Lamp.DoEvents();
                 var data = new byte[4];
                 try
                 {
@@ -104,7 +104,6 @@ namespace sublight_cl
                 }
                 catch (SocketException)
                 {
-                    Lamp.DoEvents();
                     if (!Lamp.IsOn)
                     {
                         break;
@@ -115,15 +114,12 @@ namespace sublight_cl
                 if (data.SequenceEqual(_chk))
                 {
                     _mysocket.SendTo(_chkAns, 4, SocketFlags.None, _remote);
-                    Lamp.DoEvents();
                 }
 
                 else if (_checkIfMine(data[0]) && Crc(data))
                 {
                     Lamp.SetColor(data);
                 }
-
-                Lamp.DoEvents();
             }
         }
     }
