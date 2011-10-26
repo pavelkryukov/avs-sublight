@@ -54,6 +54,8 @@ namespace sublight_sv
             return rdata != null && ans.SequenceEqual(rdata);
         }
 
+        public abstract void Close();
+
         public void StartSending()
         {
             _chkDialog.ClearProgressBar();
@@ -65,6 +67,8 @@ namespace sublight_sv
             _chkDialog.SetRight = SendAndReceiveData(ChkR, ChkRAns);
             _chkDialog.AddProgressBar();
             _chkDialog.ReDraw();
+
+            Close();
         }
     }
 }
