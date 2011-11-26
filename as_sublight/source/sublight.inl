@@ -47,4 +47,10 @@ inline void Sublight::SetSizes(const PVideoFrame src) {
     (this->*_setSizesBpp)(src);
 }
 
+inline const pixel_t* Sublight::getPointer(const PVideoFrame src,
+                                           coord_t xy) const {
+    return src->GetReadPtr() + this->yOffset * (xy & 3) +
+        this->width * (xy >> 2);
+}
+
 #endif  // AS_SUBLIGHT_SOURCE_SUBLIGHT_INL_
