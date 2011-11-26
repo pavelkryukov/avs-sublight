@@ -24,15 +24,16 @@ class Sublight : public GenericVideoFilter {
     static const coord_t SIGNATURE = 0x0C;
 
     // Trim 4-byte number to 1-byte
-    static inline packet_t CUTS(signed __int32 a);
+    static packet_t CUTS(signed __int32 a);
+
     // YUV to RGB converter
-    static inline packet_t YuvToRgb(average_t Y, average_t U, average_t V);
+    static packet_t YuvToRgb(average_t Y, average_t U, average_t V);
 
     // Control sum checking and adding
-    static inline packet_t CRC(packet_t source);
+    static packet_t CRC(packet_t source);
 
     // Size setter
-    inline void SetSizes(const PVideoFrame src);
+    void SetSizes(const PVideoFrame src);
 
     // Size setter for different colorspaces
     void(Sublight::*const _setSizesBpp)(const PVideoFrame src);
@@ -55,6 +56,10 @@ class Sublight : public GenericVideoFilter {
     fsize_t averageSizeUV;
     fsize_t yOffsetUV;
 
+    // Shifters of src
+    const pixel_t* Sublight::getPointer(const PVideoFrame src,
+                                           coord_t xy) const;
+
     // Average counters
     packet_t(Sublight::*const _getAv)(const PVideoFrame src, coord_t xy) const;
     packet_t GetAvRGB24(const PVideoFrame src, coord_t xy) const;
@@ -72,7 +77,7 @@ class Sublight : public GenericVideoFilter {
      *  | 2  6  A  E |
      *  | 3  7  B  F |
      */
-    static const frames_t frames = 0xF3E2C1D840;
+    static const frames_t frames = 0xF3E2D1C840;
   public:
     // Constructor
     explicit Sublight(PClip child);

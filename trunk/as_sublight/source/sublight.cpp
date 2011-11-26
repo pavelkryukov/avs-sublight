@@ -29,9 +29,7 @@ Sublight::Sublight(PClip child) : GenericVideoFilter(child),
                                              &Sublight::GetAvRGB32) {}
 
 packet_t Sublight::GetAvRGB24(const PVideoFrame src, coord_t xy) const {
-    register const pixel_t* srcp = src->GetReadPtr()
-                                 + this->yOffset * (xy & 3)
-                                 + this->width   * (xy >> 2);
+    register const pixel_t* srcp = this->getPointer(src, xy);
 
     // average stores
     register average_t B = 0;  // Yes I'm a believer
@@ -59,9 +57,7 @@ packet_t Sublight::GetAvRGB24(const PVideoFrame src, coord_t xy) const {
 }
 
 packet_t Sublight::GetAvRGB32(const PVideoFrame src, coord_t xy) const {
-    register const pixel_t* srcp = src->GetReadPtr()
-                                 + this->yOffset * (xy & 3)
-                                 + this->width   * (xy >> 2);
+    register const pixel_t* srcp = this->getPointer(src, xy);
 
     // average stores
     register average_t B = 0;
@@ -89,9 +85,7 @@ packet_t Sublight::GetAvRGB32(const PVideoFrame src, coord_t xy) const {
 }
 
 packet_t Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
-    register const pixel_t* srcp = src->GetReadPtr()
-                                 + this->yOffset * (xy & 3)
-                                 + this->width   * (xy >> 2);
+    register const pixel_t* srcp = this->getPointer(src, xy);
 
     // average stores
     register average_t Y = 0;
@@ -119,9 +113,7 @@ packet_t Sublight::GetAvYUY2(const PVideoFrame src, coord_t xy) const {
 }
 
 packet_t Sublight::GetAvYV12(const PVideoFrame src, coord_t xy) const {
-    register const pixel_t* srcp = src->GetReadPtr()
-                                 + this->yOffset * (xy & 3)
-                                 + this->width   * (xy >> 2);
+    register const pixel_t* srcp = this->getPointer(src, xy);
 
     // Average stores
     register average_t Y = 0;
