@@ -16,6 +16,7 @@ typedef unsigned __int16 port_t;
 typedef unsigned __int32 fsize_t;
 typedef unsigned __int32 average_t;
 typedef unsigned __int32 packet_t;
+typedef unsigned __int64 frames_t;
 
 #endif  // AS_SUBLIGHT_SOURCE_TYPES_H_
 
