@@ -24,22 +24,12 @@ class Sublight : public GenericVideoFilter {
     static const coord_t SIGNATURE = 0x0C;
 
     // Trim 4-byte number to 1-byte
-    static inline packet_t CUTS(signed __int32 a) {
-        return (a > 0xFF) ? 0xFF : 
-               (a < 0x00) ? 0x00 : static_cast<packet_t>(a);
-    }
-
-    static inline packet_t CRC(packet_t source) {
-        packet_t sourceOrig = source;
-        coord_t sum = 0;
-        for (; source > 0; source >>= 1) {
-            sum += source & 1; 
-        }
-        return sourceOrig + (sum & 3);
-    }
-
+    static inline packet_t CUTS(signed __int32 a);
     // YUV to RGB converter
-    static packet_t YuvToRgb(average_t Y, average_t U, average_t V);
+    static inline packet_t YuvToRgb(average_t Y, average_t U, average_t V);
+
+    // Control sum checking and adding
+    static inline packet_t CRC(packet_t source);
 
     // Size setter
     inline void SetSizes(const PVideoFrame src);
@@ -56,12 +46,14 @@ class Sublight : public GenericVideoFilter {
     fsize_t height;
     fsize_t line;
     fsize_t averageSize;
+    fsize_t yOffset;
 
     // UV sizes
     fsize_t widthUV;
     fsize_t heightUV;
     fsize_t lineUV;
     fsize_t averageSizeUV;
+    fsize_t yOffsetUV;
 
     // Average counters
     packet_t(Sublight::*const _getAv)(const PVideoFrame src, coord_t xy) const;
@@ -74,8 +66,13 @@ class Sublight : public GenericVideoFilter {
     virtual void Send(packet_t data) const = 0;
 
     // Working frames array
-    static const coord_t frames[];
-    static const sectorNum_t framesAmount;
+
+    /*  | 0  4  8  C |
+     *  | 1  5  9  D |
+     *  | 2  6  A  E |
+     *  | 3  7  B  F |
+     */
+    static const frames_t frames = 0xF3E2C1D840;
   public:
     // Constructor
     explicit Sublight(PClip child);

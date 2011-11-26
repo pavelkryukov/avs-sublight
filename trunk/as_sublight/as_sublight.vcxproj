@@ -118,6 +118,7 @@
     <ClInclude Include="source\avisynth.h" />
     <ClInclude Include="source\sublight.h" />
     <ClInclude Include="source\sublightUDP.h" />
+    <ClInclude Include="source\sublight.inl" />
     <ClInclude Include="source\types.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

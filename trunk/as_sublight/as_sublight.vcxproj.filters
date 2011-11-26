@@ -46,5 +46,8 @@
     <ClInclude Include="source\types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="source\sublight.inl">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
